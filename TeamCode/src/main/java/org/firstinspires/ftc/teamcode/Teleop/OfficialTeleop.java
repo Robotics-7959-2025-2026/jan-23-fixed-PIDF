@@ -28,6 +28,7 @@ public class OfficialTeleop extends LinearOpMode {
     double curTargetVelocity = 1230;
     double farTargetVelocity = 2000;
     private static final double BASE_F = 14.5;
+    private static final double BASE_P = 0.4;
     double F = 14.5;
     double P = 0.5;
     private double rx;
@@ -74,8 +75,7 @@ public class OfficialTeleop extends LinearOpMode {
             }
 
             double scaledF = BASE_F * (12.6 / batteryVoltage);
-            telemetry.addData("F", scaledF);
-            telemetry.update();
+
 
             PIDFCoefficients pidfCoefficients2 = new PIDFCoefficients(P, 0, 0, scaledF);
             shooterMotor2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients2);
@@ -113,6 +113,8 @@ public class OfficialTeleop extends LinearOpMode {
             telemetry.addData("Target velocity", curTargetVelocity);
             telemetry.addData("Current Velocity", "%.2f", curVelocity);
             telemetry.addData("Error", "%.2f", error);
+            telemetry.addData("F", scaledF);
+
             telemetry.update();
 
         }

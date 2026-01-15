@@ -45,6 +45,7 @@ public class PIDFlywheelTuning extends LinearOpMode {
 
         waitForStart();
         while (opModeIsActive()) {
+            batteryVoltage = battery.getVoltage();
             telemetry.update();
             previousGamepad1.copy(currentGamepad1);
             currentGamepad1.copy(gamepad1);
@@ -81,8 +82,8 @@ public class PIDFlywheelTuning extends LinearOpMode {
 
             double adjustedVelocity = adjustPowerForVoltage(curTargetVelocity, nominalVoltage, batteryVoltage);
 
-            shooterMotor2.setVelocity(adjustedVelocity);
-            shooterMotor3.setVelocity(adjustedVelocity);
+            shooterMotor2.setVelocity(curTargetVelocity);
+            shooterMotor3.setVelocity(curTargetVelocity);
 
             double curVelocity = shooterMotor3.getVelocity();
             double error = curTargetVelocity - curVelocity;
@@ -105,6 +106,7 @@ public class PIDFlywheelTuning extends LinearOpMode {
             telemetry.addData("Tuning P", "%.4f (D pad U/D", P);
             telemetry.addData("Tuning F", "%.4f (D pad L/R", F);
             telemetry.addData("Step Sizes", "%.4f (D button)", stepSizes[stepIndex]);
+            telemetry.addData("Battery voltage","%.4f",batteryVoltage);
             telemetry.update();
 
         }
