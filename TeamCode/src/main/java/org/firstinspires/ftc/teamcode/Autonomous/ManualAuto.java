@@ -104,67 +104,13 @@ public abstract class ManualAuto extends LinearOpMode {
         shooterTarget = 0.0;
 
         // Grab balls 4, 5, 6
-        intakeDesired = 1.0;
-        if (goTo(paths.goGrabOne)) {
-            return;
-        }
-
-        // Shoot
-        intakeDesired = 0.0;
-        shooterTarget = shooterHigh;
-        if (goTo(paths.goShootOne)) {
-            return;
-        }
-
-        transferTarget = transferHigh;
-        if (waitMillis(3000)) {
-            return;
-        }
-
-        transferTarget = 0.0;
-        shooterTarget = 0.0;
+        getAndShoot(paths.goGrabOne, paths.goShootOne);
 
         // Grab balls 7, 8, 9
-        intakeDesired = 1.0;
-        if (goTo(paths.goGrabTwo)) {
-            return;
-        }
-
-        // Shoot
-        intakeDesired = 0.0;
-        shooterTarget = shooterHigh;
-        if (goTo(paths.goShootTwo)) {
-            return;
-        }
-
-        transferTarget = transferHigh;
-        if (waitMillis(3000)) {
-            return;
-        }
-
-        transferTarget = 0.0;
-        shooterTarget = 0.0;
+        getAndShoot(paths.goGrabTwo, paths.goShootTwo);
 
         // Grab balls 10, 11, 12
-        intakeDesired = 1.0;
-        if (goTo(paths.goGrabThree)) {
-            return;
-        }
-
-        // Shoot
-        intakeDesired = 0.0;
-        shooterTarget = shooterHigh;
-        if (goTo(paths.goShootThree)) {
-            return;
-        }
-
-        transferTarget = transferHigh;
-        if (waitMillis(3000)) {
-            return;
-        }
-
-        transferTarget = 0.0;
-        shooterTarget = 0.0;
+        getAndShoot(paths.goGrabThree, paths.goShootThree);
 
         if (goTo(paths.Path8)) {
             return;
@@ -185,12 +131,15 @@ public abstract class ManualAuto extends LinearOpMode {
     public boolean waitMillis(long millis) {
         Timing.Timer timer = new Timing.Timer(millis, TimeUnit.MILLISECONDS);
         timer.start();
-        while (timer.isTimerOn()) {
+        while (!timer.done()) {
             if (isStopRequested()) {
                 return true;
             }
+            telemetry.addData("Status", "Waiting");
+            telemetry.addData("Wait progress", timer.elapsedTime());
             update();
         }
+        telemetry.addData("Status", "Running");
         return false;
     }
 
@@ -201,8 +150,10 @@ public abstract class ManualAuto extends LinearOpMode {
             if (isStopRequested()) {
                 return true;
             }
+            telemetry.addData("Status", "Moving");
             update();
         }
+        telemetry.addData("Status", "Running");
         return false;
     }
 
@@ -229,5 +180,27 @@ public abstract class ManualAuto extends LinearOpMode {
         double corrected = intakeDesired * (nominalVoltage / Math.max(1.0, batteryVoltage));
         corrected = Math.max(-1.0, Math.min(1.0, corrected));
         intake.setPower(corrected);
+    }
+
+    public void getAndShoot(PathChain get, PathChain shoot) {
+        intakeDesired = 1.0;
+        if (goTo(get)) {
+            return;
+        }
+
+        shooterTarget = shooterHigh;
+        if (goTo(shoot)) {
+            return;
+        }
+
+        transferTarget = transferHigh;
+        if (waitMillis(3000)) {
+            return;
+        }
+
+        intakeDesired = 0.0;
+        transferTarget = 0.0;
+        shooterTarget = 0.0;
+        update();
     }
 }

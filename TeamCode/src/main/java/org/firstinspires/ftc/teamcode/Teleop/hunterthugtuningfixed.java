@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.tuningOpModes;
+package org.firstinspires.ftc.teamcode.Teleop;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.PIDFController;
@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import org.firstinspires.ftc.teamcode.subsystem.util.newPIDFController;
+import org.firstinspires.ftc.teamcode.Teleop.newPIDFController;
 
 @Configurable
 @TeleOp
