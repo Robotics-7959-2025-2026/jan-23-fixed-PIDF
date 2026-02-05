@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.Teleop.newPIDFController;
@@ -90,7 +89,7 @@ public abstract class ManualAuto extends LinearOpMode {
         intakeDesired = 1.0;
         shooterTarget = shooterHigh;
 
-        if (goTo(paths.goShootPre)) {
+        if (goTo(paths.shootPre)) {
             return;
         }
 
@@ -104,15 +103,15 @@ public abstract class ManualAuto extends LinearOpMode {
         shooterTarget = 0.0;
 
         // Grab balls 4, 5, 6
-        getAndShoot(paths.goGrabOne, paths.goShootOne);
+        getAndShoot(paths.grabOne, paths.shootOne);
 
         // Grab balls 7, 8, 9
-        getAndShoot(paths.goGrabTwo, paths.goShootTwo);
+        getAndShoot(paths.grabTwo, paths.shootTwo);
 
         // Grab balls 10, 11, 12
-        getAndShoot(paths.goGrabThree, paths.goShootThree);
+        getAndShoot(paths.grabThree, paths.shootThree);
 
-        if (goTo(paths.Path8)) {
+        if (goTo(paths.hitLever)) {
             return;
         }
         if (waitMillis(200)) {
