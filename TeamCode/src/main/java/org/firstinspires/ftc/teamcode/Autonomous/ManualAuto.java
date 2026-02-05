@@ -23,23 +23,27 @@ public abstract class ManualAuto extends LinearOpMode {
     public double intakeDesired = 0;
     public DcMotorEx shooter2 = null;
     public DcMotorEx shooter3 = null;
-    // What are kD and kF, just wondering?
-    public newPIDFController flywheelController =
-            new newPIDFController(0.015, 0.0, 0.065067, 0.0);
     public double P = 0.015;
+    public double kV = 0.00036;
+    public double I = 0;
+    public double kS = 0.065067;
+    public double kD = 0.0;
+    public double kF = 0.0;
+    public newPIDFController flywheelController =
+            new newPIDFController(P, I, kD, kF);
 
     // Velocity to use when shooting
-    public double shooterHigh = 1240;
+    public double shooterHigh = 1170;
     // Velocity to use now
     public double shooterTarget = 0;
     public DcMotorEx transfer = null;
-    public double transferHigh = 0.7;
+    public double transferHigh = 1.0;
     public double transferTarget = 0.0;
 
     VoltageSensor battery = null;
     double batteryVoltage = 0.0;
 
-    public double nominalVoltage = 12.5;
+    public double nominalVoltage = 12.6;
 
     public abstract Paths getPaths();
     public abstract Pose getStartPose();
@@ -63,12 +67,9 @@ public abstract class ManualAuto extends LinearOpMode {
 
         shooter2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         shooter3.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        // What do these mean?
-        flywheelController.setFeedforward(
-                0.00036, // kV
-                0.0,    // kA (not needed for flywheel)
-                0.065067     // kS
-        );
+
+        flywheelController.setPIDF(P, I, kD, kF);
+        flywheelController.setFeedforward(kV, 0.0, kS);
 
         intake.setPower(0);
         shooter2.setPower(0);
@@ -93,11 +94,15 @@ public abstract class ManualAuto extends LinearOpMode {
             return;
         }
 
+        update();
+
         // Shoot for 3s
         transferTarget = transferHigh;
         if (waitMillis(3000)) {
             return;
         }
+
+        update();
 
         transferTarget = 0.0;
         shooterTarget = 0.0;
@@ -114,16 +119,16 @@ public abstract class ManualAuto extends LinearOpMode {
         if (goTo(paths.hitLever)) {
             return;
         }
+
+        update();
+
         if (waitMillis(200)) {
             return;
         }
 
-        telemetry.addData("Status", "Done");
+        update();
 
-        // NOTE: Remove this?
-        while (opModeIsActive()) {
-            idle();
-        }
+        telemetry.addData("Status", "Done");
     }
 
     // Always return if this returns true
@@ -162,13 +167,10 @@ public abstract class ManualAuto extends LinearOpMode {
 
         pedro.update();
 
-        double kV = 0.00036;
-        double I = 0;
-        double kS = 0.065067;
         double cVel = shooter2.getVelocity();
         telemetry.addData("TargetVel", shooterTarget);
         telemetry.addData("CurrentVel", cVel);
-        flywheelController.setPIDF(P, I, 0.0, 0.0);
+        flywheelController.setPIDF(P, I, kD, kF);
         flywheelController.setFeedforward(kV, 0.0, kS);
 
         shooter2.setPower(flywheelController.calculate(shooterTarget - cVel, shooterTarget, 0.0));
@@ -187,15 +189,23 @@ public abstract class ManualAuto extends LinearOpMode {
             return;
         }
 
+        update();
+
         shooterTarget = shooterHigh;
         if (goTo(shoot)) {
             return;
         }
 
+        update();
+
+
         transferTarget = transferHigh;
         if (waitMillis(3000)) {
             return;
         }
+
+        update();
+
 
         intakeDesired = 0.0;
         transferTarget = 0.0;
