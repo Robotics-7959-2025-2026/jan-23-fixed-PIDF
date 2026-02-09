@@ -106,20 +106,28 @@ public abstract class ManualAuto extends LinearOpMode {
         shooterTarget = 0.0;
 
         // Grab balls 4, 5, 6
-        getAndShoot(paths.grabOne, paths.shootOne);
+        if (getAndShoot(paths.grabOne, paths.shootOne)) {
+            return;
+        }
 
         // Grab balls 7, 8, 9
-        getAndShoot(paths.grabTwo, paths.shootTwo);
+        if (getAndShoot(paths.grabTwo, paths.shootTwo)) {
+            return;
+        }
 
-        // Grab balls 10, 11, 12
-        getAndShoot(paths.grabThree, paths.shootThree);
-
+        // Hit the lever
         if (goTo(paths.hitLever)) {
             return;
         }
 
         update();
 
+        // Grab balls 10, 11, 12
+        if (getAndShoot(paths.grabThree, paths.shootThree)) {
+            return;
+        }
+
+        // Extra wait
         if (waitMillis(200)) {
             return;
         }
@@ -181,17 +189,18 @@ public abstract class ManualAuto extends LinearOpMode {
         intake.setPower(corrected);
     }
 
-    public void getAndShoot(PathChain get, PathChain shoot) {
+    //
+    public boolean getAndShoot(PathChain get, PathChain shoot) {
         intakeDesired = 1.0;
         if (goTo(get)) {
-            return;
+            return true;
         }
 
         update();
 
         shooterTarget = shooterHigh;
         if (goTo(shoot)) {
-            return;
+            return true;
         }
 
         update();
@@ -199,7 +208,7 @@ public abstract class ManualAuto extends LinearOpMode {
 
         transferTarget = transferHigh;
         if (waitMillis(3000)) {
-            return;
+            return true;
         }
 
         update();
@@ -209,5 +218,7 @@ public abstract class ManualAuto extends LinearOpMode {
         transferTarget = 0.0;
         shooterTarget = 0.0;
         update();
+
+        return false;
     }
 }
