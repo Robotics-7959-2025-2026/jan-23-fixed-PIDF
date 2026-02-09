@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.arcrobotics.ftclib.util.Timing;
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -46,13 +45,12 @@ public abstract class ManualAuto extends LinearOpMode {
     public double nominalVoltage = 12.6;
 
     public abstract Paths getPaths();
-    public abstract Pose getStartPose();
 
     @Override
     public void runOpMode() {
         pedro = Constants.createFollower(hardwareMap);
         paths = getPaths();
-        pedro.setStartingPose(getStartPose());
+        pedro.setStartingPose(paths.startPose);
 
         // Why? Can we change this pls
         intake = hardwareMap.get(DcMotorEx.class, "shooterMotor");
