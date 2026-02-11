@@ -18,7 +18,7 @@ public class Motors {
         rfMotor = hardwareMap.get(DcMotorEx.class, "front_right_drive");
         lbMotor = hardwareMap.get(DcMotorEx.class, "back_left_drive");
         rbMotor = hardwareMap.get(DcMotorEx.class, "back_right_drive");;
-        intakeMotor = hardwareMap.get(DcMotorEx.class, "shooterMotor");
+        intakeMotor = hardwareMap.get(DcMotorEx.class, "intake");
         shooterMotor2 = hardwareMap.get(DcMotorEx.class, "shooterMotor2");
         shooterMotor3 = hardwareMap.get(DcMotorEx.class, "shooterMotor3");
         transfer = hardwareMap.get(DcMotorEx.class, "transfer");

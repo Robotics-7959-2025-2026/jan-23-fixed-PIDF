@@ -42,7 +42,7 @@ class OttoAprilTagPipeline extends OpenCvPipeline
 {
     private long nativeApriltagPtr;
     private Mat grey = new Mat();
-    private ArrayList<AprilTagDetection> detections = new ArrayList<>();
+    private static ArrayList<AprilTagDetection> detections = new ArrayList<>();
 
     private ArrayList<AprilTagDetection> detectionsUpdate = new ArrayList<>();
     private final Object detectionsUpdateSync = new Object();
@@ -144,7 +144,7 @@ class OttoAprilTagPipeline extends OpenCvPipeline
         }
     }
 
-    public ArrayList<AprilTagDetection> getLatestDetections()
+    public static ArrayList<AprilTagDetection> getLatestDetections()
     {
         return detections;
     }
