@@ -1,55 +1,25 @@
-/*
- * Copyright (c) 2021 OpenFTC Team
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
 package org.firstinspires.ftc.teamcode.Autonomous.Vision;
 
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.openftc.apriltag.AprilTagDetection;
+
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvInternalCamera;
-import org.openftc.easyopencv.OpenCvInternalCamera2;
+import org.openftc.easyopencv.OpenCvWebcam;
 
-import java.util.ArrayList;
 
-@TeleOp(name = "Keir April Tag Test Feb 9")
-public class AprilTagTester extends LinearOpMode
-{
-    OpenCvCamera camera;
-    OttoAprilTagPipeline aprilTagDetectionPipeline;
+@Disabled
+@Autonomous(name="Keir April Tag Test February 10th")
+public class AprilTagTester extends LinearOpMode{
+    final int cameraWidth = 1280;
+    final int cameraHeight = 720;
 
-    static final double FEET_PER_METER = 3.28084;
-
-    // Lens intrinsics
-    // UNITS ARE PIXELS
-    // NOTE: this calibration is for the C920 webcam at 800x448.
-    // You will need to do your own calibration for other configurations!
     double fx = 578.272;
     double fy = 578.272;
     double cx = 402.145;
@@ -57,99 +27,68 @@ public class AprilTagTester extends LinearOpMode
 
     // UNITS ARE METERS
     double tagsize = 0.166;
+    OttoAprilTagPipeline pipeline = new OttoAprilTagPipeline(tagsize, fx,fy,cx,cy);
 
-    int numFramesWithoutDetection = 0;
+    public void runOpMode() throws InterruptedException{
+        telemetry.addData("Starting otto now: check camera to init - adyn is a furry", "Ready");
+        telemetry.update();
 
-    final float DECIMATION_HIGH = 3;
-    final float DECIMATION_LOW = 2;
-    final float THRESHOLD_HIGH_DECIMATION_RANGE_METERS = 1.0f;
-    final int THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION = 4;
-
-    @Override
-    public void runOpMode()
-    {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "cam"), cameraMonitorViewId);
-        aprilTagDetectionPipeline = new OttoAprilTagPipeline(tagsize, fx, fy, cx, cy);
+        OpenCvWebcam webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        webcam.setPipeline(pipeline);
 
-        camera.setPipeline(aprilTagDetectionPipeline);
-        camera.setViewportRenderer();
-        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-        {
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
-            public void onOpened()
-            {
-                camera.startStreaming(800,448, OpenCvCameraRotation.UPRIGHT);
+            public void onOpened() {
+                webcam.startStreaming(cameraWidth, cameraHeight, OpenCvCameraRotation.UPRIGHT, OpenCvWebcam.StreamFormat.MJPEG);
             }
 
+
             @Override
-            public void onError(int errorCode)
-            {
+            public void onError(int errorCode) {
+
 
             }
         });
 
+
+
+
+
+
+        //view the webcam now, you cant check camera stream once the game is initialized.
         waitForStart();
 
-        telemetry.setMsTransmissionInterval(50);
 
-        while (opModeIsActive())
-        {
-            // Calling getDetectionsUpdate() will only return an object if there was a new frame
-            // processed since the last time we called it. Otherwise, it will return null. This
-            // enables us to only run logic when there has been a new frame, as opposed to the
-            // getLatestDetections() method which will always return an object.
-            ArrayList<AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
+        telemetry.addData("Succesfully init", "Running");
+        telemetry.update();
 
-            // If there's been a new frame...
-            if(detections != null)
-            {
-                telemetry.addData("FPS", camera.getFps());
-                telemetry.addData("Overhead ms", camera.getOverheadTimeMs());
-                telemetry.addData("Pipeline ms", camera.getPipelineTimeMs());
+        while(opModeIsActive()){
 
-                // If we don't see any tags
-                if(detections.size() == 0)
-                {
-                    numFramesWithoutDetection++;
+            //pit i 45 inch and 23 by firt tile
+//            telemetry.addData("Pitch:", ItWasAllRedAndYellow.getAngle());
+//            telemetry.addData("Yaw:", ItWasAllRedAndYellow.getCoordsX());
+//            telemetry.addData("Roll:", ItWasAllRedAndYellow.getCoordsY());
+//            telemetry.addData("Value:", ItWasAllRedAndYellow.getColor());
 
-                    // If we haven't seen a tag for a few frames, lower the decimation
-                    // so we can hopefully pick one up if we're e.g. far back
-                    if(numFramesWithoutDetection >= THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION)
-                    {
-                        aprilTagDetectionPipeline.setDecimation(DECIMATION_LOW);
-                    }
-                }
-                // We do see tags!
-                else
-                {
-                    numFramesWithoutDetection = 0;
+            //telemetry.addData("Angle:", ItWasAllBlueAndYellow.getAngle());
+            //telemetry.addData("CenterX:", ItWasAllBlueAndYellow.getCoordsX());
+            //telemetry.addData("CenterY:", ItWasAllBlueAndYellow.getCoordsY());
+            //telemetry.addData("Color:", ItWasAllBlueAndYellow.getColor());
 
-                    // If the target is within 1 meter, turn on high decimation to
-                    // increase the frame rate
-                    if(detections.get(0).pose.z < THRESHOLD_HIGH_DECIMATION_RANGE_METERS)
-                    {
-                        aprilTagDetectionPipeline.setDecimation(DECIMATION_HIGH);
-                    }
+            telemetry.update();
 
-                    for(AprilTagDetection detection : detections)
-                    {
-                        Orientation rot = Orientation.getOrientation(detection.pose.R, AxesReference.INTRINSIC, AxesOrder.YXZ, AngleUnit.DEGREES);
-
-                        telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
-                        telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x*FEET_PER_METER));
-                        telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y*FEET_PER_METER));
-                        telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z*FEET_PER_METER));
-                        telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", rot.firstAngle));
-                        telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", rot.secondAngle));
-                        telemetry.addLine(String.format("Rotation Roll: %.2f degrees", rot.thirdAngle));
-                    }
-                }
-
-                telemetry.update();
-            }
-
-            sleep(20);
         }
+
+
+
+        telemetry.addData("Status", "GG");
+        telemetry.update();
     }
+
+
+
+
+
+
 }
