@@ -53,7 +53,7 @@ public abstract class ManualAuto extends LinearOpMode {
         pedro.setStartingPose(paths.startPose);
 
         // Why? Can we change this pls
-        intake = hardwareMap.get(DcMotorEx.class, "shooterMotor");
+        intake = hardwareMap.get(DcMotorEx.class, "intake");
         shooter2 = hardwareMap.get(DcMotorEx.class, "shooterMotor2");
         shooter3 = hardwareMap.get(DcMotorEx.class, "shooterMotor3");
         transfer = hardwareMap.get(DcMotorEx.class, "transfer");
@@ -65,6 +65,8 @@ public abstract class ManualAuto extends LinearOpMode {
 
         shooter2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         shooter3.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         flywheelController.setPIDF(P, I, kD, kF);
         flywheelController.setFeedforward(kV, 0.0, kS);
@@ -178,7 +180,6 @@ public abstract class ManualAuto extends LinearOpMode {
         telemetry.addData("CurrentVel", cVel);
         flywheelController.setPIDF(P, I, kD, kF);
         flywheelController.setFeedforward(kV, 0.0, kS);
-
         shooter2.setPower(flywheelController.calculate(shooterTarget - cVel, shooterTarget, 0.0));
         shooter3.setPower(flywheelController.calculate(shooterTarget - cVel, shooterTarget, 0.0));
 
