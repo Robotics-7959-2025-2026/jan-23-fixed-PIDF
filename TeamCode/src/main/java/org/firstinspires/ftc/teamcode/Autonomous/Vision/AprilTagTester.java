@@ -116,14 +116,14 @@ public class AprilTagTester extends LinearOpMode{
                 currentDetections.get(0).pose.x = -rot.secondAngle;
 
 //                Path adjustToAprilTag = new Path(new BezierLine(follower::getPose, new Pose(45, 98)))
-                if(gamepad1.dpad_down){
-                    follower.turnTo(follower.getPose().getHeading() + yaw);
+                if(gamepad1.dpadDownWasPressed()){
+                    Path adjustToAprilTag = new Path(new BezierLine(follower::getPose, new Pose(follower.getPose().getX()-yaw, follower.getPose().getX()-yaw)));
+                    follower.followPath(adjustToAprilTag);
                     automatedDrive = true;
                 }
                 //pitch is x, roll is y and yaw is z.
-
-                telemetry.addData("center x", x);
-                telemetry.addData("center y", y);
+                telemetry.addData("Follower busy?", follower.isBusy());
+                telemetry.addData("robot pose", follower.getPose());
                 telemetry.addData("yaw", -rot.firstAngle);
                 telemetry.addData("pitch", -rot.secondAngle);
                 telemetry.addData("roll", -rot.thirdAngle);
