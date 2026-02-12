@@ -31,9 +31,12 @@ import java.util.ArrayList;
 public class AprilTagTester extends LinearOpMode{
     final int cameraWidth = 1280;
     final int cameraHeight = 720;
+    double yaw;
     ArrayList<AprilTagDetection> currentDetections = new ArrayList<>();
     private Follower follower;
     public static Pose startingPose;
+    private boolean automatedDrive = false;
+
 
 
     double x,y, pitchError;
@@ -87,28 +90,35 @@ public class AprilTagTester extends LinearOpMode{
         while(opModeIsActive()){
             follower.update();
 
-            follower.setTeleOpDrive(
-                    -gamepad1.left_stick_y,
-                    -gamepad1.left_stick_x,
-                    -gamepad1.right_stick_x,
-                    true
-            );
+            if(!automatedDrive){
+                follower.setTeleOpDrive(
+                        -gamepad1.left_stick_y,
+                        -gamepad1.left_stick_x,
+                        -gamepad1.right_stick_x,
+                        true
+                );
+            }
+
 
             currentDetections = OttoAprilTagPipeline.getLatestDetections();
-            if(!OttoAprilTagPipeline.getLatestDetections().isEmpty()){
+            if(!currentDetections.isEmpty()){
                 telemetry.addData("AprilTag Detections", OttoAprilTagPipeline.getLatestDetections());
                 x = currentDetections.get(0).center.x;
                 y = currentDetections.get(0).center.y;
 
                 Orientation rot = Orientation.getOrientation(currentDetections.get(0).pose.R, AxesReference.INTRINSIC, AxesOrder.YXZ, AngleUnit.RADIANS);
+                //yaw
                 currentDetections.get(0).pose.z = -rot.firstAngle;
+                yaw = currentDetections.get(0).pose.z;
+
                 currentDetections.get(0).pose.y = -rot.thirdAngle;
                 //pitch
                 currentDetections.get(0).pose.x = -rot.secondAngle;
 
 //                Path adjustToAprilTag = new Path(new BezierLine(follower::getPose, new Pose(45, 98)))
                 if(gamepad1.dpad_down){
-                    follower.turnTo(follower.getPose().getHeading() + currentDetections.get(0).pose.x);
+                    follower.turnTo(follower.getPose().getHeading() + yaw);
+                    automatedDrive = true;
                 }
                 //pitch is x, roll is y and yaw is z.
 
@@ -124,6 +134,10 @@ public class AprilTagTester extends LinearOpMode{
                 telemetry.update();
             }
 
+            if (automatedDrive && (gamepad1.dpadDownWasPressed() || !follower.isBusy())) {
+                follower.startTeleopDrive();
+                automatedDrive = false;
+            }
             telemetry.update();
 
         }
