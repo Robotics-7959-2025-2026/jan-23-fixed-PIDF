@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Autonomous;
+package org.firstinspires.ftc.teamcode.Autonomous.Opmode;
 
 import com.arcrobotics.ftclib.util.Timing;
 import com.pedropathing.follower.Follower;
@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
+import org.firstinspires.ftc.teamcode.Autonomous.Paths.Paths;
 import org.firstinspires.ftc.teamcode.Teleop.newPIDFController;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
@@ -52,7 +53,6 @@ public abstract class ManualAuto extends LinearOpMode {
         paths = getPaths();
         pedro.setStartingPose(paths.startPose);
 
-        // Why? Can we change this pls
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         shooter2 = hardwareMap.get(DcMotorEx.class, "shooterMotor2");
         shooter3 = hardwareMap.get(DcMotorEx.class, "shooterMotor3");

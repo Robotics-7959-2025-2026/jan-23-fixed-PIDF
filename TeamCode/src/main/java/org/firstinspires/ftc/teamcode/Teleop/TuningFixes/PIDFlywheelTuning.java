@@ -1,20 +1,20 @@
-package org.firstinspires.ftc.teamcode.Teleop;
+package org.firstinspires.ftc.teamcode.Teleop.TuningFixes;
 
 import static org.firstinspires.ftc.teamcode.Teleop.Motors.*;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
-import com.arcrobotics.ftclib.controller.PIDFController;
+
+import org.firstinspires.ftc.teamcode.Teleop.Motors;
 
 
 //We are so back
+@Disabled
 @TeleOp(name = "PIDFlywheelTuning")
 public class PIDFlywheelTuning extends LinearOpMode {
 

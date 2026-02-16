@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.Autonomous.Vision;
 import android.annotation.SuppressLint;
 import android.util.Size;
 
+import com.qualcomm.robotcore.hardware.HardwareMap;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
@@ -25,7 +27,7 @@ public class AprilTagCamera {
 
     private Telemetry telemetry;
 
-    public AprilTagCamera(WebcamName camera, Telemetry telemetry) {
+    public AprilTagCamera(HardwareMap hardwareMap, Telemetry telemetry) {
         this.telemetry = telemetry;
 
         atp = new AprilTagProcessor.Builder()
@@ -38,7 +40,7 @@ public class AprilTagCamera {
 
         vp = new VisionPortal.Builder()
                 .addProcessor(atp)
-                .setCamera(camera)
+                .setCamera(hardwareMap.get(WebcamName.class, "cam"))
                 .setCameraResolution(new Size(1280, 720))
                 .enableLiveView(true)
                 .setStreamFormat(VisionPortal.StreamFormat.MJPEG)

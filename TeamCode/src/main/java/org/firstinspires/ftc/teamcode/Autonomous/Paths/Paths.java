@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Autonomous;
+package org.firstinspires.ftc.teamcode.Autonomous.Paths;
 
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;

@@ -1,6 +1,9 @@
-package org.firstinspires.ftc.teamcode.Autonomous;
+package org.firstinspires.ftc.teamcode.Autonomous.Opmode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+
+import org.firstinspires.ftc.teamcode.Autonomous.Paths.Paths;
+import org.firstinspires.ftc.teamcode.Autonomous.Paths.PathsBlue;
 
 // Wow, Ayden is in the dictionary but not Adyn??
 @Autonomous(name = "Adyn Blue", preselectTeleOp = "TeleOp")
