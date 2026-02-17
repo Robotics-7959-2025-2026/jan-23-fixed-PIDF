@@ -75,9 +75,9 @@ public class AprilTagAlignmentTest extends LinearOpMode{
         curTime = getRuntime();
 
         while(opModeIsActive()) {
-            forward = -gamepad1.left_stick_y;
-            strafe = gamepad1.left_stick_x;
-            rotate = gamepad1.right_stick_x;
+            forward = gamepad1.left_stick_y;
+            strafe = -gamepad1.left_stick_x;
+            rotate = -gamepad1.right_stick_x;
 
             ATC.update();
             //can align using specific id, for now its just gonna align to the one
@@ -94,7 +94,7 @@ public class AprilTagAlignmentTest extends LinearOpMode{
                     if(Math.abs(error) < angleTolerance){
                         rotate = 0;
                     }else{
-                        double pTerm = error *kP;
+                        double pTerm = error * kP;
 
                         curTime = getRuntime();
                         double dT = curTime-lastTime;
@@ -138,7 +138,7 @@ public class AprilTagAlignmentTest extends LinearOpMode{
                 kD += stepSizes[stepIndex];
             }
             if(gamepad1.dpadDownWasPressed()){
-                kD += stepSizes[stepIndex];
+                kD -= stepSizes[stepIndex];
             }
 
             if(goalTag != null){
