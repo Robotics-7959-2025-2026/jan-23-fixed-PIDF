@@ -41,7 +41,7 @@ public class AprilTagCamera {
         vp = new VisionPortal.Builder()
                 .addProcessor(atp)
                 .setCamera(hardwareMap.get(WebcamName.class, "cam"))
-                .setCameraResolution(new Size(1280, 720))
+                .setCameraResolution(new Size(640, 480))
                 .enableLiveView(true)
                 .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
                 .build();

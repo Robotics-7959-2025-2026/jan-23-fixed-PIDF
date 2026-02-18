@@ -12,7 +12,14 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.teamcode.Autonomous.Vision.AprilTagCamera;
 import org.firstinspires.ftc.teamcode.Teleop.newPIDFController;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+
+import java.util.ArrayList;
+import java.util.List;
 
 //We are so back
 @Configurable
@@ -36,8 +43,18 @@ public class OfficialTeleop extends LinearOpMode {
     private static final double BASE_P = 0.4;
     double F = 14.02;
     double P = 0.015;
-    private double rx;
     private boolean doorToggle = false;
+    private AprilTagCamera ATC = null;
+    private AprilTagDetection goalTag;
+    private List<AprilTagDetection> tagDetections = new ArrayList<>();
+    private double aimbotP = 0.002;
+    private double aimbotError = 0.0;
+    private double aimbotD = 0.0001;
+    private double aimbotPrevErr = 0.0;
+    private double goalX = 0.0;
+    double aimbotAngleTolerance = 0.2;
+    double curTime = 0;
+    double lastTime = 0;
 
     @Override
     public void runOpMode() {
@@ -61,6 +78,8 @@ public class OfficialTeleop extends LinearOpMode {
                 0.0,    // kA (not needed for flywheel)
                 0.065067     // kS
         );
+        ATC = new AprilTagCamera(hardwareMap, telemetry);
+
         waitForStart();
         while (opModeIsActive()) {
             telemetry.update();
@@ -68,14 +87,47 @@ public class OfficialTeleop extends LinearOpMode {
             currentGamepad1.copy(gamepad1);
             batteryVoltage = battery.getVoltage();
 
-            //boilerplate, dont touch
-            rx = (gamepad1.right_stick_x / 4) * 3 ;
+            double mf = gamepad1.left_stick_y;
+            double ms = gamepad1.left_stick_x;
+            double mr = gamepad1.right_stick_x * 0.75;
 
-            rfMotor.setPower(Math.pow(gamepad1.left_stick_y + gamepad1.left_stick_x + rx, ctrlPow) * Math.signum(gamepad1.left_stick_y + gamepad1.left_stick_x + rx));
-            lfMotor.setPower(Math.pow(gamepad1.left_stick_y - gamepad1.left_stick_x - rx, ctrlPow) * Math.signum(gamepad1.left_stick_y - gamepad1.left_stick_x - rx));
-            rbMotor.setPower(Math.pow(gamepad1.left_stick_y - gamepad1.left_stick_x + rx, ctrlPow) * Math.signum(gamepad1.left_stick_y - gamepad1.left_stick_x + rx));
-            lbMotor.setPower(Math.pow(gamepad1.left_stick_y + gamepad1.left_stick_x  - rx, ctrlPow) * Math.signum(gamepad1.left_stick_y + gamepad1.left_stick_x - rx));
+            ATC.update();
+            //can align using specific id, for now its just gonna align to the one
+            //that it sees
+            tagDetections = ATC.getTagDetections();
+            if (!tagDetections.isEmpty()) {
+                goalTag = tagDetections.get(0);
+            }
 
+            if (gamepad1.dpad_down) {
+                if(goalTag != null){
+                    error = goalX-goalTag.ftcPose.bearing; //angle away from target
+
+                    if (Math.abs(error) >= aimbotAngleTolerance) {
+                        double pTerm = error * aimbotP;
+
+                        curTime = getRuntime();
+                        double dT = curTime-lastTime;
+                        double dTerm = ((error-aimbotPrevErr)/ dT) * aimbotD;
+
+                        mr += Range.clip(pTerm + dTerm, -0.4, 0.4);
+
+                        aimbotPrevErr = error;
+                        lastTime = curTime;
+                    }
+                } else {
+                    lastTime = getRuntime();
+                    aimbotPrevErr = 0;
+                }
+            } else {
+                aimbotPrevErr = 0;
+                lastTime = getRuntime();
+            }
+
+            rfMotor.setPower(mf + ms + mr);
+            lfMotor.setPower(mf - ms - mr);
+            rbMotor.setPower(mf - ms + mr);
+            lbMotor.setPower(mf + ms - mr);
 
             //hold left bumper to spin, then press the right bumper to shoot
             if (gamepad1.left_bumper) {
