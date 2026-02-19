@@ -47,12 +47,12 @@ public class OfficialTeleop extends LinearOpMode {
     private AprilTagCamera ATC = null;
     private AprilTagDetection goalTag;
     private List<AprilTagDetection> tagDetections = new ArrayList<>();
-    private double aimbotP = 0.002;
+    private double aimbotP = 0.0296;
     private double aimbotError = 0.0;
-    private double aimbotD = 0.0001;
+    private double aimbotD = 0.001;
     private double aimbotPrevErr = 0.0;
     private double goalX = 0.0;
-    double aimbotAngleTolerance = 0.2;
+    double aimbotAngleTolerance = 0.01;
     double curTime = 0;
     double lastTime = 0;
 
@@ -99,7 +99,7 @@ public class OfficialTeleop extends LinearOpMode {
                 goalTag = tagDetections.get(0);
             }
 
-            if (gamepad1.dpad_down) {
+            if (gamepad1.right_stick_button) {
                 if(goalTag != null){
                     error = goalX-goalTag.ftcPose.bearing; //angle away from target
 
@@ -110,7 +110,7 @@ public class OfficialTeleop extends LinearOpMode {
                         double dT = curTime-lastTime;
                         double dTerm = ((error-aimbotPrevErr)/ dT) * aimbotD;
 
-                        mr += Range.clip(pTerm + dTerm, -0.4, 0.4);
+                        mr += Range.clip(pTerm + dTerm, -0.5, 0.5);
 
                         aimbotPrevErr = error;
                         lastTime = curTime;
