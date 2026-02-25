@@ -50,7 +50,7 @@ public class AprilTagAlignmentTest extends LinearOpMode{
     double kD = 0.0001;
     double lastError = 0;
     //derivative offset ong
-    double goalX = 0;
+    double goalX = 0.1;
 
     //less accurate the webcam, the higher the tolerance needed
     double angleTolerance = 0.2;

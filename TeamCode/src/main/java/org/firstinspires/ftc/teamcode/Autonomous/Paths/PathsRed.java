@@ -59,18 +59,15 @@ public class PathsRed extends Paths {
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(36), maxRotTimeShoot)
                 .build();
 
-        grabThree = follower
-                .pathBuilder()
-                .addPath(
+        grabThree = follower.pathBuilder().addPath(
                         new BezierCurve(
                                 new Pose(85.000, 90.000),
-                                new Pose(84.000, 66.000),
-                                new Pose(84.000, 32.000),
+                                new Pose(84.390, 64.439),
+                                new Pose(74.049, 14.049),
                                 new Pose(96.000, 36.000),
                                 new Pose(119.000, 36.000)
                         )
-                )
-                .setLinearHeadingInterpolation(Math.toRadians(36), Math.toRadians(0), maxRotTimeGrab)
+                ).setLinearHeadingInterpolation(Math.toRadians(36), Math.toRadians(0))
                 .build();
 
         shootThree = follower
@@ -91,6 +88,22 @@ public class PathsRed extends Paths {
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(36), Math.toRadians(0), maxRotTimeGrab)
+                .build();
+        hitLeverReturn = follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(
+                                new Pose(123.000, 72.000),
+                                new Pose(85.000, 90.000)
+                        )
+                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(36), maxRotTimeGrab)
+                .build();
+        leaveZone = follower.pathBuilder().addPath(
+                        new BezierLine(
+                                new Pose(85.000, 90.000),
+                                new Pose(94.927, 79.122)
+                        )
+                ).setTangentHeadingInterpolation()
                 .build();
         startPose = new Pose(122.500, 122.000, Math.toRadians(36));
     }

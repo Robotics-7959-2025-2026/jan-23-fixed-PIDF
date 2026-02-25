@@ -123,11 +123,16 @@ public abstract class ManualAuto extends LinearOpMode {
         }
 
         update();
-
+        if (goTo(paths.hitLeverReturn)){
+            return;
+        }
+        update();
         // Grab balls 10, 11, 12
         if (getAndShoot(paths.grabThree, paths.shootThree)) {
             return;
         }
+
+        if(goTo(paths.leaveZone)){ return; }
 
         // Extra wait
         if (waitMillis(200)) {

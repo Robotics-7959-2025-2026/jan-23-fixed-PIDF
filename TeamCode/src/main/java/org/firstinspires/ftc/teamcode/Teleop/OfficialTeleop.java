@@ -97,6 +97,7 @@ public class OfficialTeleop extends LinearOpMode {
             tagDetections = ATC.getTagDetections();
             if (!tagDetections.isEmpty()) {
                 goalTag = tagDetections.get(0);
+                telemetry.addData("Distance in cm", "%.2f", goalTag.ftcPose.range);
             }
 
             if (gamepad1.right_stick_button) {

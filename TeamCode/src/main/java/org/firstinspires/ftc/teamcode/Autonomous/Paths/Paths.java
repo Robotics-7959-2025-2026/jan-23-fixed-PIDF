@@ -13,4 +13,7 @@ public class Paths {
     public PathChain grabThree;
     public PathChain shootThree;
     public PathChain hitLever;
+    public PathChain hitLeverReturn;
+
+    public PathChain leaveZone;
 }
