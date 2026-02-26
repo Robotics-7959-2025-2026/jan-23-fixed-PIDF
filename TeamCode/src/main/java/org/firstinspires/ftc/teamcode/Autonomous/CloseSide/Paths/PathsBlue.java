@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Autonomous.Paths;
+package org.firstinspires.ftc.teamcode.Autonomous.CloseSide.Paths;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;

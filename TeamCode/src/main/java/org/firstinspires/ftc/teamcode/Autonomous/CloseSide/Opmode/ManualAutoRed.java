@@ -1,9 +1,9 @@
-package org.firstinspires.ftc.teamcode.Autonomous.Opmode;
+package org.firstinspires.ftc.teamcode.Autonomous.CloseSide.Opmode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.Autonomous.Paths.Paths;
-import org.firstinspires.ftc.teamcode.Autonomous.Paths.PathsRed;
+import org.firstinspires.ftc.teamcode.Autonomous.CloseSide.Paths.Paths;
+import org.firstinspires.ftc.teamcode.Autonomous.CloseSide.Paths.PathsRed;
 
 @Autonomous(name = "Adyn Red", preselectTeleOp = "TeleOp")
 

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Autonomous.Opmode;
+package org.firstinspires.ftc.teamcode.Autonomous.CloseSide.Opmode;
 
 import com.arcrobotics.ftclib.util.Timing;
 import com.pedropathing.follower.Follower;
@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
-import org.firstinspires.ftc.teamcode.Autonomous.Paths.Paths;
+import org.firstinspires.ftc.teamcode.Autonomous.CloseSide.Paths.Paths;
 import org.firstinspires.ftc.teamcode.Teleop.newPIDFController;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
