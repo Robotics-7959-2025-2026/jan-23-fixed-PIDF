@@ -37,7 +37,7 @@ public class OfficialTeleop extends LinearOpMode {
     private double ctrlPow = 2.0;
     double error;
     double curVelocity;
-    double curTargetVelocity = 1240;
+    double curTargetVelocity = 1250;
     double farTargetVelocity = 2000;
     private static final double BASE_F = 14.5;
     private static final double BASE_P = 0.4;
@@ -51,7 +51,7 @@ public class OfficialTeleop extends LinearOpMode {
     private double aimbotError = 0.0;
     private double aimbotD = 0.001;
     private double aimbotPrevErr = 0.0;
-    private double goalX = 0.0;
+    private double goalX = 4.0;
     double aimbotAngleTolerance = 0.01;
     double curTime = 0;
     double lastTime = 0;
@@ -113,6 +113,9 @@ public class OfficialTeleop extends LinearOpMode {
 
                         mr += Range.clip(pTerm + dTerm, -0.5, 0.5);
 
+                        //targetVelocity = ((-0.0119164 * goalTag.ftcPose.range)*(-0.0119164 * goalTag.ftcPose.range)) + (8.25141 * (goalTag.ftcPose.range)) + 710.09773;
+                        targetVelocity = (6.7762 * (goalTag.ftcPose.range)) + 751.44476;
+                        curTargetVelocity = targetVelocity;
                         aimbotPrevErr = error;
                         lastTime = curTime;
                     }
@@ -152,7 +155,7 @@ public class OfficialTeleop extends LinearOpMode {
             // ===== CUSTOM FLYWHEEL VELOCITY CONTROL =====
 
             if (gamepad1.right_bumper) {
-                targetVelocity = 1240;
+                targetVelocity = curTargetVelocity;
                 shooterMotor2.setPower(flywheelController.calculate(targetVelocity - velocity,targetVelocity,0));
                 shooterMotor3.setPower(flywheelController.calculate(targetVelocity - velocity,targetVelocity,0));
 
@@ -179,6 +182,18 @@ public class OfficialTeleop extends LinearOpMode {
                 }else{
                     doorToucher.setPosition(0);
                 }
+            }
+
+            if (gamepad1.bWasPressed()){
+
+                curTargetVelocity += 50.0;
+
+            }
+
+            if (gamepad1.xWasPressed()){
+
+                curTargetVelocity -= 50.0;
+
             }
             curVelocity = shooterMotor3.getVelocity();
             error = curTargetVelocity + curVelocity;
