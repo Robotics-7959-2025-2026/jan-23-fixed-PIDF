@@ -78,25 +78,23 @@ public class PathsRed extends Paths {
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(36), maxRotTimeShoot)
                 .build();
 
-        hitLever = follower
-                .pathBuilder()
-                .addPath(
+        hitLever = follower.pathBuilder().addPath(
                         new BezierCurve(
                                 new Pose(85.000, 90.000),
-                                new Pose(96.000, 72.000),
-                                new Pose(123.000, 67.000)
+                                new Pose(113.139, 58.054),
+                                new Pose(123.000, 72.000)
                         )
-                )
-                .setLinearHeadingInterpolation(Math.toRadians(36), Math.toRadians(0), maxRotTimeGrab)
+                ).setLinearHeadingInterpolation(Math.toRadians(36), Math.toRadians(15), maxRotTimeGrab)
+
                 .build();
-        hitLeverReturn = follower
-                .pathBuilder()
-                .addPath(
-                        new BezierLine(
+
+        hitLeverReturn = follower.pathBuilder().addPath(
+                        new BezierCurve(
                                 new Pose(123.000, 72.000),
+                                new Pose(110.209, 60.148),
                                 new Pose(85.000, 90.000)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(36), maxRotTimeGrab)
+                ).setLinearHeadingInterpolation(Math.toRadians(15), Math.toRadians(36), maxRotTimeShoot)
                 .build();
         leaveZone = follower.pathBuilder().addPath(
                         new BezierLine(
