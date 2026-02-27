@@ -149,25 +149,16 @@ public abstract class ManualAuto extends LinearOpMode {
         }
         update();
 
-        // Grab balls 4, 5, 6
-        if (getAndShootBetter(paths.grabOne, paths.shootOne)) {
-            return;
-        }
+        rampIntake();
 
-        update();
         // Grab balls 10, 11, 12
         if (getAndShootBetter(paths.grabThree, paths.shootThree)) {
             return;
         }
 
+        rampIntake();
+
         if(goTo(paths.leaveZone)){ return; }
-
-        // Extra wait
-        if (waitMillis(200)) {
-            return;
-        }
-
-        update();
 
         telemetry.addData("Status", "Done");
     }
@@ -294,6 +285,46 @@ public abstract class ManualAuto extends LinearOpMode {
         update();
 
         if (goTo(shoot)) {
+            return true;
+        }
+
+        update();
+
+        intakeDesired = 1.0;
+        transferTarget = transferHigh;
+        if (waitMillis(shootDuration)) {
+            return true;
+        }
+
+        update();
+
+
+        intakeDesired = 0.0;
+        transferTarget = 0.0;
+        shooterTarget = 0.0;
+        update();
+
+        return false;
+    }
+
+    public boolean rampIntake() {
+        // grab/shoot One
+
+        intakeDesired = 1.0;
+        if (goTo(paths.grabOne)) {
+            return true;
+        }
+
+        if (waitMillis(2000)) {
+            return true;
+        }
+
+        intakeDesired = 0.0;
+        shooterTarget = shooterHigh;
+
+        update();
+
+        if (goTo(paths.shootOne)) {
             return true;
         }
 
