@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.Autonomous.CloseSide.Paths.Paths;
 import org.firstinspires.ftc.teamcode.Autonomous.FarSide.Paths.FarPaths;
-import org.firstinspires.ftc.teamcode.Teleop.newPIDFController;
+import org.firstinspires.ftc.teamcode.Teleop.newPIDFController2;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.concurrent.TimeUnit;
@@ -24,17 +24,17 @@ public abstract class FarAuto extends LinearOpMode {
     public double intakeDesired = 0;
     public DcMotorEx shooter2 = null;
     public DcMotorEx shooter3 = null;
-    public double P = 0.015;
-    public double kV = 0.00036;
+    public double P = 0.024;
+    public double kV = 0.000387;
     public double I = 0;
-    public double kS = 0.065067;
+    public double kS = 0.11;
     public double kD = 0.0;
     public double kF = 0.0;
-    public newPIDFController flywheelController =
-            new newPIDFController(P, I, kD, kF);
+    public newPIDFController2 flywheelController =
+            new newPIDFController2(P, I, kD, kF);
 
     // Velocity to use when shooting
-    public double shooterHigh = 1170;
+    public double shooterHigh = 1480;
     // Velocity to use now
     public double shooterTarget = 0;
     public DcMotorEx transfer = null;
@@ -91,17 +91,21 @@ public abstract class FarAuto extends LinearOpMode {
         intakeDesired = 1.0;
         shooterTarget = shooterHigh;
 
-
+        update();
         //far side order will be pre, grab&shoot one, grab&shoot two.
         if (goTo(paths.shootPre)) {
             return;
         }
 
         update();
+        if (waitMillis(1500)) {
+            return;
+        }
+        update();
 
         // Shoot for 3s
         transferTarget = transferHigh;
-        if (waitMillis(3000)) {
+        if (waitMillis(2500)) {
             return;
         }
 
@@ -111,12 +115,16 @@ public abstract class FarAuto extends LinearOpMode {
         shooterTarget = 0.0;
 
         // Grab balls 4, 5, 6
-        if (getAndShoot(paths.grabOne, paths.shootOne)) {
+        if (getAndShoot(paths.grabOne, paths.shootOne, 2500, 500)) {
             return;
         }
 
+        if(waitMillis(3000)){
+            return;
+        }
+        update();
         // Grab balls 7, 8, 9
-        if (getAndShoot(paths.grabTwo, paths.shootTwo)) {
+        if (getAndShoot(paths.grabTwo, paths.shootTwo, 3000)) {
             return;
         }
 
@@ -193,6 +201,85 @@ public abstract class FarAuto extends LinearOpMode {
         update();
 
         shooterTarget = shooterHigh;
+        if (goTo(shoot)) {
+            return true;
+        }
+
+        update();
+
+
+        transferTarget = transferHigh;
+        if (waitMillis(3000)) {
+            return true;
+        }
+
+        update();
+
+
+        intakeDesired = 0.0;
+        transferTarget = 0.0;
+        shooterTarget = 0.0;
+        update();
+
+        return false;
+    }
+
+    //this is awful but its called method overloading in java, its a common practice so chill on me
+    public boolean getAndShoot(PathChain get, PathChain shoot, int wait) {
+        intakeDesired = 1.0;
+        if (goTo(get)) {
+            return true;
+        }
+        //waits for intaking
+        if(waitMillis(wait)){
+            return true;
+        }
+        update();
+
+        shooterTarget = shooterHigh;
+        //shooter is on high as it goes to shoot
+
+        if (goTo(shoot)) {
+            return true;
+        }
+
+        update();
+
+
+        transferTarget = transferHigh;
+        if (waitMillis(3000)) {
+            return true;
+        }
+
+        update();
+
+
+        intakeDesired = 0.0;
+        transferTarget = 0.0;
+        shooterTarget = 0.0;
+        update();
+
+        return false;
+    }
+
+    public boolean getAndShoot(PathChain get, PathChain shoot, int wait, int shooterWait) {
+        intakeDesired = 1.0;
+        if (goTo(get)) {
+            return true;
+        }
+        //waits for intaking
+        if(waitMillis(wait)){
+            return true;
+        }
+        update();
+
+        shooterTarget = shooterHigh;
+        //shooter is on high as it goes to shoot
+        update();
+        if(waitMillis(shooterWait)){
+            return true;
+        }
+        update();
         if (goTo(shoot)) {
             return true;
         }

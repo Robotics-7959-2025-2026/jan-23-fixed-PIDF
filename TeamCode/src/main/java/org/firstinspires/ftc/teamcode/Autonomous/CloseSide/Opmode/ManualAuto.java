@@ -91,7 +91,7 @@ public abstract class ManualAuto extends LinearOpMode {
         shooterTarget = shooterHigh;
 
 
-        //new order will be pre, shoot two, rack 3, shoot one, and then shoot three last.
+        //new order will be pre, grab two, hit lever, shootTwo, grabOne, shootOne, grabThree, shootThree, leaveZone
         if (goTo(paths.shootPre)) {
             return;
         }
@@ -109,18 +109,14 @@ public abstract class ManualAuto extends LinearOpMode {
         transferTarget = 0.0;
         shooterTarget = 0.0;
 
-
-        // Grab balls 7, 8, 9
-        if (getAndShoot(paths.grabTwo, paths.shootTwo)) {
-            return;
-        }
-        // Hit the lever
-        if (goTo(paths.hitLever)) {
-            return;
-        }
-
+        intakeDesired = 1.0;
         update();
-        if (goTo(paths.hitLeverReturn)){
+        if(goTo(paths.grabTwo)){
+            return;
+        }
+        update();
+
+        if(getAndShoot(paths.hitLever, paths.shootTwo)){
             return;
         }
         update();
@@ -130,6 +126,7 @@ public abstract class ManualAuto extends LinearOpMode {
             return;
         }
 
+        update();
         // Grab balls 10, 11, 12
         if (getAndShoot(paths.grabThree, paths.shootThree)) {
             return;

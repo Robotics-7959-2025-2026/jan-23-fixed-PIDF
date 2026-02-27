@@ -8,16 +8,23 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.teamcode.Teleop.newPIDFController;
+import org.firstinspires.ftc.teamcode.Teleop.newPIDFController2;
 
 @Configurable
 @TeleOp
-public class hunterthugtuningfixed extends OpMode {
+public class hunterthugtuningfar extends OpMode {
 
-    private newPIDFController controller;
+    private newPIDFController2 controller;
     private DcMotorEx motor;
     private DcMotorEx motor2;
     public static double targetVelocity, velocity;
     public static double P,I,kV,kS;
+
+    // p = 0.015
+    // I = 0
+    // kS = 0.11
+    // kV = 0.000387
+    // targetvelocity = 1480
 
 
     @Override
@@ -28,7 +35,7 @@ public class hunterthugtuningfixed extends OpMode {
         motor.setDirection(DcMotorSimple.Direction.FORWARD);
         motor2 = hardwareMap.get(DcMotorEx.class, "shooterMotor3");
         motor2.setDirection(DcMotorSimple.Direction.FORWARD);
-        controller = new newPIDFController(P,I,0.0, 0.0); // PIDF, Feedforward (kV, kA, kS)
+        controller = new newPIDFController2(P,I,0.0, 0.0); // PIDF, Feedforward (kV, kA, kS)
     }
 
     @Override
@@ -37,9 +44,9 @@ public class hunterthugtuningfixed extends OpMode {
         telemetry.addData("CurrentVel", velocity);
         controller.setPIDF(P,I, 0.0, 0);
         controller.setFeedforward(
-                0.00036, // kV
+                0.000395, // kV
                 0.0,    // kA (not needed for flywheel)
-                0.065067     // kS
+                0.11    // kS
         );
         velocity = motor.getVelocity();
         motor.setPower(controller.calculate(targetVelocity - velocity,targetVelocity,0));
