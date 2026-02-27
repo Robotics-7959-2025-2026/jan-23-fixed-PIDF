@@ -33,6 +33,9 @@ public class OfficialTeleop extends LinearOpMode {
     public static double targetVelocity, velocity;
     private double desiredPower = 1;
     private double batteryVoltage, correctedPower;
+    double kV, I, kS;
+    double currentVelocity;
+    double mf, ms, mr;
 
     private double ctrlPow = 2.0;
     double error;
@@ -87,9 +90,9 @@ public class OfficialTeleop extends LinearOpMode {
             currentGamepad1.copy(gamepad1);
             batteryVoltage = battery.getVoltage();
 
-            double mf = gamepad1.left_stick_y;
-            double ms = gamepad1.left_stick_x;
-            double mr = gamepad1.right_stick_x * 0.75;
+            mf = gamepad1.left_stick_y;
+            ms = gamepad1.left_stick_x;
+            mr = gamepad1.right_stick_x * 0.75;
 
             ATC.update();
             //can align using specific id, for now its just gonna align to the one
@@ -142,10 +145,10 @@ public class OfficialTeleop extends LinearOpMode {
                 intakeMotor.setPower(0.0);
             }
 
-            double currentVelocity = shooterMotor3.getVelocity();
-            double kV = 0.00036;
-            double I = 0;
-            double kS = 0.065067;
+            currentVelocity = shooterMotor3.getVelocity();
+            kV = 0.00036;
+            I = 0;
+            kS = 0.065067;
             telemetry.addData("TargetVel", targetVelocity);
             telemetry.addData("CurrentVel", velocity);
             flywheelController.setPIDF(P,I, 0.0, 0);
@@ -189,6 +192,7 @@ public class OfficialTeleop extends LinearOpMode {
                 curTargetVelocity += 50.0;
 
             }
+
 
             if (gamepad1.xWasPressed()){
 

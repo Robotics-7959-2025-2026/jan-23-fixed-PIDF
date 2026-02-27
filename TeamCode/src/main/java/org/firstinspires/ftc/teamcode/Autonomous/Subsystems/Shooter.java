@@ -17,10 +17,10 @@ import dev.nextftc.hardware.powerable.SetPower;
 
 @Configurable
 public  class Shooter implements Subsystem {
-    public static double kP = 0.00012;
-    public static double kV = 0.00047;
+    public static double kP = 0.015; //0ld 0.00012
+    public static double kV = 0.00036; //old 0.00047
     public static double kA = 0;
-    public static double kS = 0;
+    public static double kS = 0.065067; //old was 0
     public static double kI = 0, kD = 0;
 
     PIDCoefficients coefficients = new PIDCoefficients(kP, kI, kD);
