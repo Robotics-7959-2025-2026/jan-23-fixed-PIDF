@@ -87,7 +87,7 @@ public abstract class ManualAuto extends LinearOpMode {
         telemetry.addData("Status", "Started");
         telemetry.update();
 
-        intakeDesired = 1.0;
+        intakeDesired = 0;
         shooterTarget = shooterHigh;
 
 

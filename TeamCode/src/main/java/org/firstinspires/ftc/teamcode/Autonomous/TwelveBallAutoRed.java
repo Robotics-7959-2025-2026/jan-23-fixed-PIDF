@@ -45,11 +45,12 @@ public class TwelveBallAutoRed extends NextFTCOpMode {
         new SequentialGroup(
                 new ParallelGroup(
                         new FollowPath(paths.goShootPre),
-                        Shooter.turnon,
-                        Intake.turnon
+                        Shooter.turnon
                 ),
+                new Delay(1),
                 Transfer.turnon,
-                new Delay(3),
+                Intake.turnon,
+                new Delay(1),
                 //balls have been shot, go pick up 4 5 and 6.
                 Shooter.turnoff,
                 Transfer.turnoff,
@@ -58,11 +59,11 @@ public class TwelveBallAutoRed extends NextFTCOpMode {
 
 
                 Intake.turnoff,
-                Shooter.turnon,
                 //4 5 and 6 are intaked.
+                Shooter.turnon,
                 new FollowPath(paths.goShootOne),
-                Intake.turnon,
                 Transfer.turnon,
+                Intake.turnon,
                 new Delay(3),
                 //balls have been shot, go pick up 7 8 and 9.
                 Transfer.turnoff,
@@ -72,9 +73,11 @@ public class TwelveBallAutoRed extends NextFTCOpMode {
                 new ParallelGroup(
                         new FollowPath(paths.goGrabTwo)
                 ),
+                Intake.turnoff,
                 Shooter.turnon,
                 new FollowPath(paths.goShootTwo),
                 Transfer.turnon,
+                Intake.turnon,
                 new Delay(3),
                 Transfer.turnoff,
                 Shooter.turnoff,
@@ -82,11 +85,14 @@ public class TwelveBallAutoRed extends NextFTCOpMode {
                 Intake.turnon,
                 // 10 11 12
                 new ParallelGroup(
-                        new FollowPath(paths.goGrabThree),
-                        Shooter.turnon
+                        new FollowPath(paths.goGrabThree)
                 ),
+                Intake.turnoff,
+                Shooter.turnon,
                 new FollowPath(paths.goShootThree),
+                Intake.turnon,
                 Transfer.turnon,
+                Intake.turnon,
                 new Delay(3),
                 new FollowPath(paths.Path8),
                 Transfer.turnoff,
