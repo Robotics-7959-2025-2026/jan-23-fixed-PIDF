@@ -20,24 +20,45 @@ public abstract class ManualAuto extends LinearOpMode {
     public Follower pedro = null;
 
     public DcMotorEx intake = null;
+    /** The current <b>power ratio</b> of the transfer motor
+     */
     public double intakeDesired = 0;
+
     public DcMotorEx shooter2 = null;
     public DcMotorEx shooter3 = null;
+
+    /** PID factor for shooters
+     */
     public double P = 0.015;
+    /** PID factor for shooters
+     */
     public double kV = 0.00036;
+    /** PID factor for shooters
+     */
     public double I = 0;
+    /** PID factor for shooters
+     */
     public double kS = 0.065067;
+    /** PID factor for shooters
+     */
     public double kD = 0.0;
+    /** PID factor for shooters
+     */
     public double kF = 0.0;
+    /** Specifically for shooters
+     */
     public newPIDFController flywheelController =
             new newPIDFController(P, I, kD, kF);
 
-    // Velocity to use when shooting
     public double shooterHigh = 1170;
-    // Velocity to use now
+    /** The current <b>velocity</b> of the shooter motors
+     */
     public double shooterTarget = 0;
+
     public DcMotorEx transfer = null;
     public double transferHigh = 1.0;
+    /** The current <b>power ratio</b> of the transfer motor
+     */
     public double transferTarget = 0.0;
 
     VoltageSensor battery = null;
@@ -45,6 +66,10 @@ public abstract class ManualAuto extends LinearOpMode {
 
     public double nominalVoltage = 12.6;
 
+    /** Obtain the Paths for this instance
+     * @return The set of Paths to be followed throughout the auton
+     * @see Paths
+     */
     public abstract Paths getPaths();
 
     @Override
@@ -90,7 +115,6 @@ public abstract class ManualAuto extends LinearOpMode {
         intakeDesired = 1.0;
         shooterTarget = shooterHigh;
 
-
         //new order will be pre, grab two, hit lever, shootTwo, grabOne, shootOne, grabThree, shootThree, leaveZone
         if (goTo(paths.shootPre)) {
             return;
@@ -116,19 +140,19 @@ public abstract class ManualAuto extends LinearOpMode {
         }
         update();
 
-        if(getAndShoot(paths.hitLever, paths.shootTwo)){
+        if(getAndShootBetter(paths.hitLever, paths.shootTwo)){
             return;
         }
         update();
 
         // Grab balls 4, 5, 6
-        if (getAndShoot(paths.grabOne, paths.shootOne)) {
+        if (getAndShootBetter(paths.grabOne, paths.shootOne)) {
             return;
         }
 
         update();
         // Grab balls 10, 11, 12
-        if (getAndShoot(paths.grabThree, paths.shootThree)) {
+        if (getAndShootBetter(paths.grabThree, paths.shootThree)) {
             return;
         }
 
@@ -144,7 +168,11 @@ public abstract class ManualAuto extends LinearOpMode {
         telemetry.addData("Status", "Done");
     }
 
-    // Always return if this returns true
+    /** Idle for a duration, but keep running update
+     *
+     * @param millis the number of ms to wait
+     * @return true if early exit requested
+    */
     public boolean waitMillis(long millis) {
         Timing.Timer timer = new Timing.Timer(millis, TimeUnit.MILLISECONDS);
         timer.start();
@@ -160,7 +188,12 @@ public abstract class ManualAuto extends LinearOpMode {
         return false;
     }
 
-    // Always return if this returns true
+    /** Follow a path until completion
+     *
+     * @see PathChain
+     * @param loc the PedroPathing PathChain to follow
+     * @return true if early exit requested
+     */
     public boolean goTo(PathChain loc) {
         pedro.followPath(loc);
         while (pedro.isBusy()) {
@@ -174,6 +207,10 @@ public abstract class ManualAuto extends LinearOpMode {
         return false;
     }
 
+    /** Update shooter/transfer/intake motors and PIDs
+     * <p>
+     * You <b>MUST</b> run this to update the motors, or else the <i>will not update</i>
+     */
     public void update() {
         telemetry.update();
         batteryVoltage = battery.getVoltage();
@@ -195,7 +232,13 @@ public abstract class ManualAuto extends LinearOpMode {
         intake.setPower(corrected);
     }
 
-    //
+    /** Handles acquiring and shooting artifacts based on PedroPaths
+     *
+     * @param get The path to get the artifacts
+     * @param shoot The path to follow before shooting the artifacts
+     * @return true if early exit requested
+     * @see PathChain
+     */
     public boolean getAndShoot(PathChain get, PathChain shoot) {
         intakeDesired = 1.0;
         if (goTo(get)) {
@@ -205,6 +248,149 @@ public abstract class ManualAuto extends LinearOpMode {
         update();
 
         shooterTarget = shooterHigh;
+        if (goTo(shoot)) {
+            return true;
+        }
+
+        update();
+
+
+        transferTarget = transferHigh;
+        if (waitMillis(3000)) {
+            return true;
+        }
+
+        update();
+
+
+        intakeDesired = 0.0;
+        transferTarget = 0.0;
+        shooterTarget = 0.0;
+        update();
+
+        return false;
+    }
+
+    /** Handles acquiring and shooting artifacts based on PedroPaths, but better
+     *
+     * @param get The path to get the artifacts
+     * @param shoot The path to follow before shooting the artifacts
+     * @return true if early exit requested
+     * @see PathChain
+     */
+    public boolean getAndShootBetter(PathChain get, PathChain shoot) {
+        intakeDesired = 1.0;
+        if (goTo(get)) {
+            return true;
+        }
+
+        update();
+
+        if (goTo(shoot)) {
+            return true;
+        }
+
+        update();
+
+        shooterTarget = shooterHigh;
+
+        update();
+
+        if (waitMillis(200)) {
+            return true;
+        }
+
+
+        transferTarget = transferHigh;
+        if (waitMillis(3000)) {
+            return true;
+        }
+
+        update();
+
+
+        intakeDesired = 0.0;
+        transferTarget = 0.0;
+        shooterTarget = 0.0;
+        update();
+
+        return false;
+    }
+
+    /** Handles acquiring and shooting artifacts based on PedroPaths
+     *
+     * @param get The path to get the artifacts
+     * @param shoot The path to follow before shooting the artifacts
+     * @param intakeDelay The ms delay to wait after intaking
+     * @return true if early exit requested
+     * @see PathChain
+     */
+    public boolean getAndShoot(PathChain get, PathChain shoot, long intakeDelay) {
+        intakeDesired = 1.0;
+        if (goTo(get)) {
+            return true;
+        }
+
+        update();
+
+        if (waitMillis(intakeDelay)) {
+            return true;
+        }
+
+        update();
+
+        shooterTarget = shooterHigh;
+        if (goTo(shoot)) {
+            return true;
+        }
+
+        update();
+
+
+        transferTarget = transferHigh;
+        if (waitMillis(3000)) {
+            return true;
+        }
+
+        update();
+
+
+        intakeDesired = 0.0;
+        transferTarget = 0.0;
+        shooterTarget = 0.0;
+        update();
+
+        return false;
+    }
+
+    /** Handles acquiring and shooting artifacts based on PedroPaths
+     *
+     * @param get The path to get the artifacts
+     * @param shoot The path to follow before shooting the artifacts
+     * @param intakeDelay The ms delay to wait after intaking
+     * @param shooterDelay The ms delay to wait before going to shoot, after
+     * @return true if early exit requested
+     * @see PathChain
+     */
+    public boolean getAndShoot(PathChain get, PathChain shoot, long intakeDelay, long shooterDelay) {
+        intakeDesired = 1.0;
+        if (goTo(get)) {
+            return true;
+        }
+
+        update();
+
+        if (waitMillis(intakeDelay)) {
+            return true;
+        }
+
+        update();
+
+        shooterTarget = shooterHigh;
+        if (waitMillis(shooterDelay)) {
+            return true;
+        }
+
         if (goTo(shoot)) {
             return true;
         }
