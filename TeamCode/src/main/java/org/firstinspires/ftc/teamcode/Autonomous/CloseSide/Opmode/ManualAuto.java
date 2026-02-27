@@ -23,6 +23,8 @@ public abstract class ManualAuto extends LinearOpMode {
     /** The current <b>power ratio</b> of the transfer motor
      */
     public double intakeDesired = 0;
+    
+    public long shootDuration = 1000;
 
     public DcMotorEx shooter2 = null;
     public DcMotorEx shooter3 = null;
@@ -112,19 +114,25 @@ public abstract class ManualAuto extends LinearOpMode {
         telemetry.addData("Status", "Started");
         telemetry.update();
 
-        intakeDesired = 0;
+        intakeDesired = 0.0;
         shooterTarget = shooterHigh;
-
+        transferTarget = 0.0;
         //new order will be pre, grab two, hit lever, shootTwo, grabOne, shootOne, grabThree, shootThree, leaveZone
         if (goTo(paths.shootPre)) {
+            return;
+        }
+
+        if (waitMillis(500)) {
             return;
         }
 
         update();
 
         // Shoot for 3s
+
         transferTarget = transferHigh;
-        if (waitMillis(3000)) {
+        intakeDesired = 1.0;
+        if (waitMillis(shootDuration)) {
             return;
         }
 
@@ -135,12 +143,8 @@ public abstract class ManualAuto extends LinearOpMode {
 
         intakeDesired = 1.0;
         update();
-        if(goTo(paths.grabTwo)){
-            return;
-        }
-        update();
 
-        if(getAndShootBetter(paths.hitLever, paths.shootTwo)){
+        if(getAndShootBetter(paths.grabTwo, paths.shootTwo)){
             return;
         }
         update();
@@ -256,7 +260,7 @@ public abstract class ManualAuto extends LinearOpMode {
 
 
         transferTarget = transferHigh;
-        if (waitMillis(3000)) {
+        if (waitMillis(shootDuration)) {
             return true;
         }
 
@@ -284,6 +288,9 @@ public abstract class ManualAuto extends LinearOpMode {
             return true;
         }
 
+        intakeDesired = 0.0;
+        shooterTarget = shooterHigh;
+
         update();
 
         if (goTo(shoot)) {
@@ -292,17 +299,9 @@ public abstract class ManualAuto extends LinearOpMode {
 
         update();
 
-        shooterTarget = shooterHigh;
-
-        update();
-
-        if (waitMillis(200)) {
-            return true;
-        }
-
-
+        intakeDesired = 1.0;
         transferTarget = transferHigh;
-        if (waitMillis(3000)) {
+        if (waitMillis(shootDuration)) {
             return true;
         }
 
@@ -348,7 +347,7 @@ public abstract class ManualAuto extends LinearOpMode {
 
 
         transferTarget = transferHigh;
-        if (waitMillis(3000)) {
+        if (waitMillis(shootDuration)) {
             return true;
         }
 
@@ -399,7 +398,7 @@ public abstract class ManualAuto extends LinearOpMode {
 
 
         transferTarget = transferHigh;
-        if (waitMillis(3000)) {
+        if (waitMillis(shootDuration)) {
             return true;
         }
 
