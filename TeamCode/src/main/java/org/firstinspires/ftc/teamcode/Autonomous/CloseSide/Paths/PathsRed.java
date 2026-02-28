@@ -92,7 +92,7 @@ public class PathsRed extends Paths {
                                 new Pose(94.976, 72.878)
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(42), Math.toRadians(42))
+                .setLinearHeadingInterpolation(Math.toRadians(42), Math.toRadians(42), maxRotTimeGrab)
                 .build();
         startPose = new Pose(122.500, 122.000, Math.toRadians(36));
     }

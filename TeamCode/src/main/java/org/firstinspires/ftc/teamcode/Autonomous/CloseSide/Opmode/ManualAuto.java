@@ -76,6 +76,8 @@ public abstract class ManualAuto extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+
+        //region Initialization
         pedro = Constants.createFollower(hardwareMap);
         paths = getPaths();
         pedro.setStartingPose(paths.startPose);
@@ -106,6 +108,8 @@ public abstract class ManualAuto extends LinearOpMode {
         battery = hardwareMap.voltageSensor.iterator().next();
         batteryVoltage = battery.getVoltage();
 
+        //endregion
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
@@ -117,6 +121,8 @@ public abstract class ManualAuto extends LinearOpMode {
         intakeDesired = 0.0;
         shooterTarget = shooterHigh;
         transferTarget = 0.0;
+
+        //region Execution
         //new order will be pre, grab two, hit lever, shootTwo, grabOne, shootOne, grabThree, shootThree, leaveZone
         if (goTo(paths.shootPre)) {
             return;
@@ -126,8 +132,6 @@ public abstract class ManualAuto extends LinearOpMode {
             return;
         }
 
-        update();
-
         // Shoot for 3s
 
         transferTarget = transferHigh;
@@ -136,31 +140,34 @@ public abstract class ManualAuto extends LinearOpMode {
             return;
         }
 
-        update();
-
         transferTarget = 0.0;
         shooterTarget = 0.0;
 
         intakeDesired = 1.0;
-        update();
 
-        if(getAndShootBetter(paths.grabTwo, paths.shootTwo)){
+        if(getAndShoot(paths.grabTwo, paths.shootTwo)){
             return;
         }
-        update();
 
-        rampIntake();
+        if (rampIntake()) {
+            return;
+        }
 
         // Grab balls 10, 11, 12
-        if (getAndShootBetter(paths.grabThree, paths.shootThree)) {
+        if (getAndShoot(paths.grabThree, paths.shootThree)) {
             return;
         }
 
-        rampIntake();
+        if (rampIntake()) {
+            return;
+        }
 
-        if(goTo(paths.leaveZone)){ return; }
+        if (goTo(paths.leaveZone)) { return; }
 
         telemetry.addData("Status", "Done");
+
+        //endregion
+
     }
 
     /** Idle for a duration, but keep running update
@@ -227,7 +234,7 @@ public abstract class ManualAuto extends LinearOpMode {
         intake.setPower(corrected);
     }
 
-    /** Handles acquiring and shooting artifacts based on PedroPaths
+    /** Handles acquiring and shooting artifacts based on PedroPaths, but better
      *
      * @param get The path to get the artifacts
      * @param shoot The path to follow before shooting the artifacts
@@ -240,55 +247,12 @@ public abstract class ManualAuto extends LinearOpMode {
             return true;
         }
 
-        update();
-
-        shooterTarget = shooterHigh;
-        if (goTo(shoot)) {
-            return true;
-        }
-
-        update();
-
-
-        transferTarget = transferHigh;
-        if (waitMillis(shootDuration)) {
-            return true;
-        }
-
-        update();
-
-
-        intakeDesired = 0.0;
-        transferTarget = 0.0;
-        shooterTarget = 0.0;
-        update();
-
-        return false;
-    }
-
-    /** Handles acquiring and shooting artifacts based on PedroPaths, but better
-     *
-     * @param get The path to get the artifacts
-     * @param shoot The path to follow before shooting the artifacts
-     * @return true if early exit requested
-     * @see PathChain
-     */
-    public boolean getAndShootBetter(PathChain get, PathChain shoot) {
-        intakeDesired = 1.0;
-        if (goTo(get)) {
-            return true;
-        }
-
         intakeDesired = 0.0;
         shooterTarget = shooterHigh;
-
-        update();
 
         if (goTo(shoot)) {
             return true;
         }
-
-        update();
 
         intakeDesired = 1.0;
         transferTarget = transferHigh;
@@ -296,12 +260,10 @@ public abstract class ManualAuto extends LinearOpMode {
             return true;
         }
 
-        update();
-
-
         intakeDesired = 0.0;
         transferTarget = 0.0;
         shooterTarget = 0.0;
+
         update();
 
         return false;
@@ -322,123 +284,21 @@ public abstract class ManualAuto extends LinearOpMode {
         intakeDesired = 0.0;
         shooterTarget = shooterHigh;
 
-        update();
-
         if (goTo(paths.shootOne)) {
             return true;
         }
 
-        update();
-
         intakeDesired = 1.0;
         transferTarget = transferHigh;
         if (waitMillis(shootDuration)) {
             return true;
         }
 
-        update();
-
 
         intakeDesired = 0.0;
         transferTarget = 0.0;
         shooterTarget = 0.0;
-        update();
 
-        return false;
-    }
-
-    /** Handles acquiring and shooting artifacts based on PedroPaths
-     *
-     * @param get The path to get the artifacts
-     * @param shoot The path to follow before shooting the artifacts
-     * @param intakeDelay The ms delay to wait after intaking
-     * @return true if early exit requested
-     * @see PathChain
-     */
-    public boolean getAndShoot(PathChain get, PathChain shoot, long intakeDelay) {
-        intakeDesired = 1.0;
-        if (goTo(get)) {
-            return true;
-        }
-
-        update();
-
-        if (waitMillis(intakeDelay)) {
-            return true;
-        }
-
-        update();
-
-        shooterTarget = shooterHigh;
-        if (goTo(shoot)) {
-            return true;
-        }
-
-        update();
-
-
-        transferTarget = transferHigh;
-        if (waitMillis(shootDuration)) {
-            return true;
-        }
-
-        update();
-
-
-        intakeDesired = 0.0;
-        transferTarget = 0.0;
-        shooterTarget = 0.0;
-        update();
-
-        return false;
-    }
-
-    /** Handles acquiring and shooting artifacts based on PedroPaths
-     *
-     * @param get The path to get the artifacts
-     * @param shoot The path to follow before shooting the artifacts
-     * @param intakeDelay The ms delay to wait after intaking
-     * @param shooterDelay The ms delay to wait before going to shoot, after
-     * @return true if early exit requested
-     * @see PathChain
-     */
-    public boolean getAndShoot(PathChain get, PathChain shoot, long intakeDelay, long shooterDelay) {
-        intakeDesired = 1.0;
-        if (goTo(get)) {
-            return true;
-        }
-
-        update();
-
-        if (waitMillis(intakeDelay)) {
-            return true;
-        }
-
-        update();
-
-        shooterTarget = shooterHigh;
-        if (waitMillis(shooterDelay)) {
-            return true;
-        }
-
-        if (goTo(shoot)) {
-            return true;
-        }
-
-        update();
-
-
-        transferTarget = transferHigh;
-        if (waitMillis(shootDuration)) {
-            return true;
-        }
-
-        update();
-
-
-        intakeDesired = 0.0;
-        transferTarget = 0.0;
-        shooterTarget = 0.0;
         update();
 
         return false;

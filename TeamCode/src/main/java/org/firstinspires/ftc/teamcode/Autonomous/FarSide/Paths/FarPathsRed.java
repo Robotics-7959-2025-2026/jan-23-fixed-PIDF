@@ -18,7 +18,7 @@ public class FarPathsRed extends FarPaths {
 
                                 new Pose(83.902, 22.537)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(66))
+                ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(66), maxRotTimeShoot)
 
                 .build();
 
@@ -28,7 +28,7 @@ public class FarPathsRed extends FarPaths {
                                 new Pose(95.427, 11.720),
                                 new Pose(130.561, 14.951)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(66), Math.toRadians(330))
+                ).setLinearHeadingInterpolation(Math.toRadians(66), Math.toRadians(330), maxRotTimeGrab)
 
                 .build();
 
@@ -38,7 +38,7 @@ public class FarPathsRed extends FarPaths {
                                 new Pose(101.683, 11.573),
                                 new Pose(84.122, 22.585)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(330), Math.toRadians(66))
+                ).setLinearHeadingInterpolation(Math.toRadians(330), Math.toRadians(66), maxRotTimeShoot)
 
                 .build();
 
@@ -48,7 +48,7 @@ public class FarPathsRed extends FarPaths {
                                 new Pose(95.610, 8.939),
                                 new Pose(124.756, 11.634)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(66), Math.toRadians(0))
+                ).setLinearHeadingInterpolation(Math.toRadians(66), Math.toRadians(0), maxRotTimeGrab)
 
                 .build();
 
@@ -58,7 +58,7 @@ public class FarPathsRed extends FarPaths {
                                 new Pose(96.085, 9.073),
                                 new Pose(83.707, 22.707)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(63))
+                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(63), maxRotTimeShoot)
 
                 .build();
 
@@ -68,7 +68,7 @@ public class FarPathsRed extends FarPaths {
                                 new Pose(93.793, 4.695),
                                 new Pose(112.659, 8.976)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(63), Math.toRadians(0))
+                ).setLinearHeadingInterpolation(Math.toRadians(63), Math.toRadians(0), maxRotTimeGrab)
 
                 .build();
         startPose = new Pose(80, 8, Math.toRadians(90));
