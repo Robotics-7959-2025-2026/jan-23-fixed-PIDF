@@ -46,7 +46,6 @@ public class OfficialTeleop extends LinearOpMode {
     private static final double BASE_P = 0.4;
     double F = 14.02;
     double P = 0.015;
-    private boolean doorToggle = false;
     private AprilTagCamera ATC = null;
     private AprilTagDetection goalTag;
     private List<AprilTagDetection> tagDetections = new ArrayList<>();
@@ -95,34 +94,47 @@ public class OfficialTeleop extends LinearOpMode {
             mr = gamepad1.right_stick_x * 0.75;
 
             ATC.update();
-            //can align using specific id, for now its just gonna align to the one
-            //that it sees
             tagDetections = ATC.getTagDetections();
             if (!tagDetections.isEmpty()) {
-                goalTag = tagDetections.get(0);
-                if(goalTag != null){
+                goalTag = null;
+
+                // Filter for decent tags
+                for (AprilTagDetection gT : tagDetections) {
+                    if (gT.id == 20 || gT.id == 24) {
+                        goalTag = gT;
+                        break;
+                    }
+                }
+
+                if (goalTag != null) {
                     telemetry.addData("Distance in cm", "%.2f", goalTag.ftcPose.range);
+                } else {
+                    telemetry.addData("GoalTag", "==null");
                 }
             }
 
             if (gamepad1.right_stick_button) {
-                if(goalTag != null){
-                    error = goalX-goalTag.ftcPose.bearing; //angle away from target
+                if (goalTag != null) {
+                    if (goalTag.ftcPose == null) {
+                        telemetry.addData("GoalTag", "ftcPose==null");
+                    } else {
+                        error = goalX-goalTag.ftcPose.bearing; //angle away from target
 
-                    if (Math.abs(error) >= aimbotAngleTolerance) {
-                        double pTerm = error * aimbotP;
+                        if (Math.abs(error) >= aimbotAngleTolerance) {
+                            double pTerm = error * aimbotP;
 
-                        curTime = getRuntime();
-                        double dT = curTime-lastTime;
-                        double dTerm = ((error-aimbotPrevErr)/ dT) * aimbotD;
+                            curTime = getRuntime();
+                            double dT = curTime-lastTime;
+                            double dTerm = ((error-aimbotPrevErr)/ dT) * aimbotD;
 
-                        mr += Range.clip(pTerm + dTerm, -0.5, 0.5);
+                            mr += Range.clip(pTerm + dTerm, -0.5, 0.5);
 
-                        //targetVelocity = ((-0.0119164 * goalTag.ftcPose.range)*(-0.0119164 * goalTag.ftcPose.range)) + (8.25141 * (goalTag.ftcPose.range)) + 710.09773;
-                        targetVelocity = (6.7762 * (goalTag.ftcPose.range)) + 751.44476;
-                        curTargetVelocity = targetVelocity;
-                        aimbotPrevErr = error;
-                        lastTime = curTime;
+                            //targetVelocity = ((-0.0119164 * goalTag.ftcPose.range)*(-0.0119164 * goalTag.ftcPose.range)) + (8.25141 * (goalTag.ftcPose.range)) + 710.09773;
+                            targetVelocity = (6.7762 * (goalTag.ftcPose.range)) + 751.44476;
+                            curTargetVelocity = targetVelocity;
+                            aimbotPrevErr = error;
+                            lastTime = curTime;
+                        }
                     }
                 } else {
                     lastTime = getRuntime();
@@ -175,26 +187,11 @@ public class OfficialTeleop extends LinearOpMode {
                 transfer.setPower(0);
             }
 
-
-
-            if (currentGamepad1.x && !previousGamepad1.x) {
-                doorToggle = !doorToggle;
-            }
-
-            if(gamepad1.x){
-                if (doorToggle) {
-                    doorToucher.setPosition(0.3);
-                }else{
-                    doorToucher.setPosition(0);
-                }
-            }
-
-            if (gamepad1.bWasPressed()){
+            if (gamepad1.bWasPressed()) {
 
                 curTargetVelocity += 50.0;
 
             }
-
 
             if (gamepad1.xWasPressed()){
 
