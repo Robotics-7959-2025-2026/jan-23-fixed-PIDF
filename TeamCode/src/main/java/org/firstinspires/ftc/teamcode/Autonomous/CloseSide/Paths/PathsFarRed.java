@@ -6,8 +6,8 @@ import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 
 public class PathsFarRed extends Paths {
-    public static final double maxRotTimeGrab = 0.5;
-    public static final double maxRotTimeShoot = 0.8;
+    public static final double maxRotTimeGrab = 0.4;
+    public static final double maxRotTimeShoot = 1;
 
     public PathsFarRed(Follower follower) {
         shootPre = follower.pathBuilder()
@@ -46,6 +46,7 @@ public class PathsFarRed extends Paths {
                         new BezierCurve(
                                 new Pose(86.448, 12.311),
                                 new Pose(112.476, 17.875),
+                                new Pose(116.247, 8.369),
                                 new Pose(132.942, 9.120)
                         )
                 )
@@ -60,7 +61,7 @@ public class PathsFarRed extends Paths {
                                 new Pose(86.390, 12.304)
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(66),maxRotTimeShoot)
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(64),maxRotTimeShoot)
                 .build();
 
         grabThree = follower.pathBuilder()
@@ -68,10 +69,11 @@ public class PathsFarRed extends Paths {
                         new BezierCurve(
                                 new Pose(86.390, 12.304),
                                 new Pose(114.007, 17.022),
+                                new Pose(118.901, 7.188),
                                 new Pose(133.022, 9.687)
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(66), Math.toRadians(0),maxRotTimeGrab)
+                .setLinearHeadingInterpolation(Math.toRadians(64), Math.toRadians(0),maxRotTimeGrab)
                 .build();
 
         shootThree = follower.pathBuilder()
@@ -82,7 +84,7 @@ public class PathsFarRed extends Paths {
                                 new Pose(86.496, 12.398)
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(66),maxRotTimeShoot)
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(64),maxRotTimeShoot)
                 .build();
 
         leaveZone = follower.pathBuilder()
@@ -92,7 +94,7 @@ public class PathsFarRed extends Paths {
                                 new Pose(107.518, 15.860)
                         )
                 )
-                .setConstantHeadingInterpolation(Math.toRadians(66))
+                .setConstantHeadingInterpolation(Math.toRadians(64))
                 .build();
         startPose = new Pose(87.22891566265059, 8.520481927710843, Math.toRadians(90));
     }
