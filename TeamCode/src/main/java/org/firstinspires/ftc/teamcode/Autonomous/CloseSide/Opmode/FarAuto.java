@@ -255,9 +255,11 @@ public abstract class FarAuto extends LinearOpMode {
         if (goTo(shoot)) {
             return true;
         }
+
         if (waitMillis(prefiretime)) {
             return true;
         }
+
         intakeDesired = 1.0;
         transferTarget = transferHigh;
         if (waitMillis(shootDuration)) {
@@ -289,6 +291,10 @@ public abstract class FarAuto extends LinearOpMode {
         shooterTarget = shooterHigh;
 
         if (goTo(paths.shootOne)) {
+            return true;
+        }
+
+        if (waitMillis(prefiretime)) {
             return true;
         }
 
