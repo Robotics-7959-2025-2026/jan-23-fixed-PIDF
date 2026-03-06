@@ -58,7 +58,7 @@ public class PaladinTeleop extends LinearOpMode {
     private double aimbotP = 0.0296;
     private boolean lockMode;
     private double aimbotError = 0.0;
-    private double aimbotD = 0.001;
+    private double aimbotD = 0.0001;
     private double aimbotPrevErr = 0.0;
     private double goalX = 4.0;
     double aimbotAngleTolerance = 0.01;
