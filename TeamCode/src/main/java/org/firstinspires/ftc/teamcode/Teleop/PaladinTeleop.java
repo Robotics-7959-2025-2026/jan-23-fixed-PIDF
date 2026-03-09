@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.Teleop.Motors.*;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierPoint;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -54,6 +55,7 @@ public class PaladinTeleop extends LinearOpMode {
     private List<AprilTagDetection> tagDetections = new ArrayList<>();
     private double PIDFCoefficients;
     private Pose oldPose;
+    private double oldHeading;
     private Follower follower;
     private double aimbotP = 0.0296;
     private boolean lockMode;
@@ -215,13 +217,17 @@ public class PaladinTeleop extends LinearOpMode {
             }
 
             if(gamepad2.aWasPressed()){
+                if(lockMode){
+                    follower.startTeleopDrive();
+                }
                 lockMode = !lockMode;
                 oldPose = follower.getPose();
+                oldHeading = follower.getHeading();
             }
 
             if(lockMode){
                 follower.activateAllPIDFs();
-                follower.holdPoint(oldPose);
+                follower.holdPoint(new BezierPoint(oldPose), follower.getHeading(), true);
             }else{
                 follower.deactivateAllPIDFs();
                 follower.setTeleOpDrive(-mf, -ms, -mr);
@@ -229,8 +235,6 @@ public class PaladinTeleop extends LinearOpMode {
 
             curVelocity = shooterMotor3.getVelocity();
             error = curTargetVelocity + curVelocity;
-
-            follower.setTeleOpDrive(-mf, -ms, -mr);
 
             telemetry.addData("Target velocity", curTargetVelocity);
             telemetry.addData("Current Velocity", "%.2f", curVelocity);
