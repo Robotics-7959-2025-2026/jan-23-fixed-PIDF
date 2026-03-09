@@ -17,7 +17,7 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.teamcode.Teleop.GeneralSubsystems.AllianceColor;
 import org.firstinspires.ftc.teamcode.Teleop.GeneralSubsystems.Limelight;
 
-import org.firstinspires.ftc.teamcode.Autonomous.Vision.AprilTagCamera;
+// import org.firstinspires.ftc.teamcode.Autonomous.Vision.AprilTagCamera;
 import org.firstinspires.ftc.teamcode.Teleop.newPIDFController;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.teamcode.Teleop.GeneralSubsystems.Robot;
@@ -53,9 +53,9 @@ public class OfficialTeleop extends LinearOpMode {
     private static final double BASE_P = 0.4;
     double F = 14.02;
     double P = 0.015;
-    private AprilTagCamera ATC = null;
-    private AprilTagDetection goalTag;
-    private List<AprilTagDetection> tagDetections = new ArrayList<>();
+    // private AprilTagCamera ATC = null;
+    // private AprilTagDetection goalTag;
+    // private List<AprilTagDetection> tagDetections = new ArrayList<>();
     private double aimbotP = 0.0296;
     private double aimbotError = 0.0;
     private double aimbotD = 0.001;
@@ -89,7 +89,7 @@ public class OfficialTeleop extends LinearOpMode {
                 0.0,    // kA (not needed for flywheel)
                 0.065067     // kS
         );
-        ATC = new AprilTagCamera(hardwareMap, telemetry);
+        // ATC = new AprilTagCamera(hardwareMap, telemetry);
 
         waitForStart();
         while (opModeIsActive()) {
@@ -111,57 +111,57 @@ public class OfficialTeleop extends LinearOpMode {
 //                mr = rotStickAvg; // normal drive // TODO: Test this
 //            }
 
-            ATC.update();
-            tagDetections = ATC.getTagDetections();
-            if (!tagDetections.isEmpty()) {
-                goalTag = null;
+//            ATC.update();
+//            tagDetections = ATC.getTagDetections();
+//            if (!tagDetections.isEmpty()) {
+//                goalTag = null;
+//
+//                // Filter for decent tags
+//                for (AprilTagDetection gT : tagDetections) {
+//                    if (gT.id == 20 || gT.id == 24) {
+//                        goalTag = gT;
+//                        break;
+//                    }
+//                }
+//
+//                if (goalTag != null) {
+//                    telemetry.addData("Distance in cm", "%.2f", goalTag.ftcPose.range);
+//                } else {
+//                    telemetry.addData("GoalTag", "==null");
+//                }
+//            }
 
-                // Filter for decent tags
-                for (AprilTagDetection gT : tagDetections) {
-                    if (gT.id == 20 || gT.id == 24) {
-                        goalTag = gT;
-                        break;
-                    }
-                }
-
-                if (goalTag != null) {
-                    telemetry.addData("Distance in cm", "%.2f", goalTag.ftcPose.range);
-                } else {
-                    telemetry.addData("GoalTag", "==null");
-                }
-            }
-
-            if (gamepad1.right_stick_button) {
-                if (goalTag != null) {
-                    if (goalTag.ftcPose == null) {
-                        telemetry.addData("GoalTag", "ftcPose==null");
-                    } else {
-                        error = goalX-goalTag.ftcPose.bearing; //angle away from target
-
-                        if (Math.abs(error) >= aimbotAngleTolerance) {
-                            double pTerm = error * aimbotP;
-
-                            curTime = getRuntime();
-                            double dT = curTime-lastTime;
-                            double dTerm = ((error-aimbotPrevErr)/ dT) * aimbotD;
-
-                            mr += Range.clip(pTerm + dTerm, -0.5, 0.5);
-
-                            //targetVelocity = ((-0.0119164 * goalTag.ftcPose.range)*(-0.0119164 * goalTag.ftcPose.range)) + (8.25141 * (goalTag.ftcPose.range)) + 710.09773;
-                            targetVelocity = (6.7762 * (goalTag.ftcPose.range)) + 751.44476;
-                            curTargetVelocity = targetVelocity;
-                            aimbotPrevErr = error;
-                            lastTime = curTime;
-                        }
-                    }
-                } else {
-                    lastTime = getRuntime();
-                    aimbotPrevErr = 0;
-                }
-            } else {
-                aimbotPrevErr = 0;
-                lastTime = getRuntime();
-            }
+//            if (gamepad1.right_stick_button) {
+//                if (goalTag != null) {
+//                    if (goalTag.ftcPose == null) {
+//                        telemetry.addData("GoalTag", "ftcPose==null");
+//                    } else {
+//                        error = goalX-goalTag.ftcPose.bearing; //angle away from target
+//
+//                        if (Math.abs(error) >= aimbotAngleTolerance) {
+//                            double pTerm = error * aimbotP;
+//
+//                            curTime = getRuntime();
+//                            double dT = curTime-lastTime;
+//                            double dTerm = ((error-aimbotPrevErr)/ dT) * aimbotD;
+//
+//                            mr += Range.clip(pTerm + dTerm, -0.5, 0.5);
+//
+//                            //targetVelocity = ((-0.0119164 * goalTag.ftcPose.range)*(-0.0119164 * goalTag.ftcPose.range)) + (8.25141 * (goalTag.ftcPose.range)) + 710.09773;
+//                            targetVelocity = (6.7762 * (goalTag.ftcPose.range)) + 751.44476;
+//                            curTargetVelocity = targetVelocity;
+//                            aimbotPrevErr = error;
+//                            lastTime = curTime;
+//                        }
+//                    }
+//                } else {
+//                    lastTime = getRuntime();
+//                    aimbotPrevErr = 0;
+//                }
+//            } else {
+//                aimbotPrevErr = 0;
+//                lastTime = getRuntime();
+//            }
 
 
             rfMotor.setPower(mf + ms + mr);

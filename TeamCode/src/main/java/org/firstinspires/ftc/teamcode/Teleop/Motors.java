@@ -1,3 +1,5 @@
+// This class handles the motors with definitions and methods.
+
 package org.firstinspires.ftc.teamcode.Teleop;
 
 import com.qualcomm.robotcore.hardware.AnalogInput;
@@ -12,6 +14,8 @@ public class Motors {
 
     public static DcMotorEx lfMotor, rfMotor, lbMotor, rbMotor, shooterMotor3, transfer, intakeMotor, shooterMotor2;
     public static Servo doorToucher;
+
+    // Initializes motors
 
     public static void init(HardwareMap hardwareMap) {
         lfMotor = hardwareMap.get(DcMotorEx.class, "front_left_drive");
@@ -37,6 +41,7 @@ public class Motors {
 
     }
 
+    // Sets up motor encoders
     public static void encoderPrep(){
         rbMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rfMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -50,6 +55,7 @@ public class Motors {
 
     }
 
+    // Runs the motors so they rotate to a specific rotation
     public static void runToPosition(){
         lfMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         lbMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -57,12 +63,16 @@ public class Motors {
         rbMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
+    // Resets motor encoders
     public static void resetEncoders(){
         lfMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lbMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rbMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rfMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
+
+    // Runs motor encoders
+
     public static void runEncoders(){
         rbMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rfMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
