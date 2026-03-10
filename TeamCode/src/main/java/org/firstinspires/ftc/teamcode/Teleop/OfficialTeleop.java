@@ -6,36 +6,27 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.Teleop.GeneralSubsystems.AllianceColor;
-import org.firstinspires.ftc.teamcode.Teleop.GeneralSubsystems.Limelight;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 // import org.firstinspires.ftc.teamcode.Autonomous.Vision.AprilTagCamera;
-import org.firstinspires.ftc.teamcode.Teleop.newPIDFController;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
-import org.firstinspires.ftc.teamcode.Teleop.GeneralSubsystems.Robot;
-import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.LLResultTypes.FiducialResult;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
 
-import java.util.ArrayList;
-import java.util.List;
 
 //We are so back
 @Configurable
-@TeleOp(name = "7959 Teleop")
+@TeleOp(name = "7959 Teleop Red")
 public class OfficialTeleop extends LinearOpMode {
     public newPIDFController flywheelController =
             new newPIDFController(0.015, 0.0, 0.065067, 0.0);
 
-    Robot robot;
+    private Limelight3A limelight;
+
+
     private double nominalVoltage = 12.5;
     public static double targetVelocity, velocity;
     private double desiredPower = 1;
@@ -72,7 +63,19 @@ public class OfficialTeleop extends LinearOpMode {
         Gamepad previousGamepad1 = new Gamepad();
 
         Motors.init(this.hardwareMap);
-        robot = new Robot(this);
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+
+        telemetry.setMsTransmissionInterval(11);
+
+        limelight.pipelineSwitch(0);
+
+        /*
+         * Starts polling for data.
+         */
+        limelight.start();
+
+
+
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -92,25 +95,48 @@ public class OfficialTeleop extends LinearOpMode {
         // ATC = new AprilTagCamera(hardwareMap, telemetry);
 
         waitForStart();
+
         while (opModeIsActive()) {
             telemetry.update();
             previousGamepad1.copy(currentGamepad1);
             currentGamepad1.copy(gamepad1);
             batteryVoltage = battery.getVoltage();
+            LLResult result = limelight.getLatestResult();
+
+            double distance = 0.0;
+
+            if (result != null && result.isValid()) {
+
+                double ty = result.getTy();
+
+                double cameraHeight = 0.42;   // meters (measure yours)
+                double targetHeight = 0.7493;   // meters (game dependent)
+                double cameraAngle = Math.toRadians(0); // mounting angle
+
+                distance =
+                        (targetHeight - cameraHeight) /
+                                Math.tan(cameraAngle + Math.toRadians(ty));
+
+                telemetry.addData("Distance (m)", distance);
+
+                telemetry.addData("Distance (m)", distance);
+            }
+            if(result != null){
+                telemetry.addData("tx", result.getTx());
+                telemetry.addData("ty", result.getTy());
+            }
 
             mf = gamepad1.left_stick_y;
             ms = gamepad1.left_stick_x;
             mr = gamepad1.right_stick_x * 0.75;
 
-//            float rotStickAvg = currentGamepad1.right_stick_x;
-//
-//            if (currentGamepad1.right_stick_button) {
-//                robot.limelight.updateGoal();
-//                mr = robot.limelight.updateAimPID(rotStickAvg); // auto aim
-//            } else {
-//                mr = rotStickAvg; // normal drive // TODO: Test this
-//            }
 
+
+
+
+
+//
+//
 //            ATC.update();
 //            tagDetections = ATC.getTagDetections();
 //            if (!tagDetections.isEmpty()) {
@@ -131,37 +157,35 @@ public class OfficialTeleop extends LinearOpMode {
 //                }
 //            }
 
-//            if (gamepad1.right_stick_button) {
-//                if (goalTag != null) {
-//                    if (goalTag.ftcPose == null) {
-//                        telemetry.addData("GoalTag", "ftcPose==null");
-//                    } else {
-//                        error = goalX-goalTag.ftcPose.bearing; //angle away from target
-//
-//                        if (Math.abs(error) >= aimbotAngleTolerance) {
-//                            double pTerm = error * aimbotP;
-//
-//                            curTime = getRuntime();
-//                            double dT = curTime-lastTime;
-//                            double dTerm = ((error-aimbotPrevErr)/ dT) * aimbotD;
-//
-//                            mr += Range.clip(pTerm + dTerm, -0.5, 0.5);
-//
-//                            //targetVelocity = ((-0.0119164 * goalTag.ftcPose.range)*(-0.0119164 * goalTag.ftcPose.range)) + (8.25141 * (goalTag.ftcPose.range)) + 710.09773;
-//                            targetVelocity = (6.7762 * (goalTag.ftcPose.range)) + 751.44476;
-//                            curTargetVelocity = targetVelocity;
-//                            aimbotPrevErr = error;
-//                            lastTime = curTime;
-//                        }
-//                    }
-//                } else {
-//                    lastTime = getRuntime();
-//                    aimbotPrevErr = 0;
-//                }
-//            } else {
-//                aimbotPrevErr = 0;
-//                lastTime = getRuntime();
-//            }
+            if (gamepad1.right_stick_button && result != null && result.isValid()) {
+
+                double tx = result.getTx(); // horizontal error
+
+                double cameraOffset = 0.1252; // meters from robot center
+                double offsetAngle = Math.toDegrees(Math.atan(cameraOffset / distance));
+
+                error = tx + offsetAngle;
+
+
+                double pTerm = error * aimbotP;
+
+                curTime = getRuntime();
+                double dT = curTime - lastTime;
+
+                double dTerm = 0;
+                if (dT > 0.001) {
+                    dTerm = ((error - aimbotPrevErr) / dT) * aimbotD;
+                }
+
+                mr += Range.clip(pTerm + dTerm, -0.5, 0.5);
+
+                aimbotPrevErr = error;
+                lastTime = curTime;
+                double distanceCM = distance * 100;
+
+                targetVelocity = (232.0116 * distance) + 778.90026;
+                curTargetVelocity = targetVelocity;
+            }
 
 
             rfMotor.setPower(mf + ms + mr);
@@ -218,7 +242,7 @@ public class OfficialTeleop extends LinearOpMode {
 
             }
             curVelocity = shooterMotor3.getVelocity();
-            error = curTargetVelocity + curVelocity;
+            double shooterError = curTargetVelocity - curVelocity;
 
             telemetry.addData("Target velocity", curTargetVelocity);
             telemetry.addData("Current Velocity", "%.2f", curVelocity);
