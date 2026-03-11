@@ -12,15 +12,13 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
-
 // import org.firstinspires.ftc.teamcode.Autonomous.Vision.AprilTagCamera;
 
 
 //We are so back
 @Configurable
 @TeleOp(name = "7959 Teleop Red")
-public class OfficialTeleop extends LinearOpMode {
+public class OfficialTeleopRed extends LinearOpMode {
     public newPIDFController flywheelController =
             new newPIDFController(0.015, 0.0, 0.065067, 0.0);
 
@@ -161,7 +159,12 @@ public class OfficialTeleop extends LinearOpMode {
 
                 double tx = result.getTx(); // horizontal error
 
-                double cameraOffset = 0.1252; // meters from robot center
+                double cameraOffset = 0.11; // meters from robot center
+                if (distance > 2.5) {
+                    cameraOffset = 0.17;
+                } else {
+                    cameraOffset = 0.11;
+                }
                 double offsetAngle = Math.toDegrees(Math.atan(cameraOffset / distance));
 
                 error = tx + offsetAngle;
