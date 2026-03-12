@@ -24,7 +24,7 @@ public abstract class ManualAuto extends LinearOpMode {
      */
     public double intakeDesired = 0;
     
-    public long shootDuration = 1000;
+    public long shootDuration = 600;
 
     public DcMotorEx shooter2 = null;
     public DcMotorEx shooter3 = null;
@@ -52,7 +52,7 @@ public abstract class ManualAuto extends LinearOpMode {
     public newPIDFController flywheelController =
             new newPIDFController(P, I, kD, kF);
 
-    public double shooterHigh = 1170;
+    public double shooterHigh = 1120;
     /** The current <b>velocity</b> of the shooter motors
      */
     public double shooterTarget = 0;
@@ -128,7 +128,7 @@ public abstract class ManualAuto extends LinearOpMode {
             return;
         }
 
-        if (waitMillis(500)) {
+        if (waitMillis(300)) {
             return;
         }
 
@@ -158,6 +158,9 @@ public abstract class ManualAuto extends LinearOpMode {
             return;
         }
 
+        if (rampIntake()) {
+            return;
+        }
         if (rampIntake()) {
             return;
         }
@@ -242,7 +245,9 @@ public abstract class ManualAuto extends LinearOpMode {
      * @see PathChain
      */
     public boolean getAndShoot(PathChain get, PathChain shoot) {
-        intakeDesired = 1.0;
+        intakeDesired = 0.7;
+        shooterTarget = -0.1;
+        transferTarget = -0.3;
         if (goTo(get)) {
             return true;
         }
@@ -273,11 +278,13 @@ public abstract class ManualAuto extends LinearOpMode {
         // grab/shoot One
 
         intakeDesired = 1.0;
+        transferTarget = -0.3;
+        shooterTarget = -0.1;
         if (goTo(paths.grabOne)) {
             return true;
         }
 
-        if (waitMillis(2000)) {
+        if (waitMillis(800)) {
             return true;
         }
 
