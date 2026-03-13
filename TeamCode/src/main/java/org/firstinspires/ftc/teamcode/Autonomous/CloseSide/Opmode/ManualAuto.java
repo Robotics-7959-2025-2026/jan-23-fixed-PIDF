@@ -128,7 +128,7 @@ public abstract class ManualAuto extends LinearOpMode {
             return;
         }
 
-        if (waitMillis(300)) {
+        if (waitMillis(100)) {
             return;
         }
 
