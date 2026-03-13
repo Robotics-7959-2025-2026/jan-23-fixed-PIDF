@@ -1,11 +1,9 @@
-package org.firstinspires.ftc.teamcode.Autonomous.FarSide.Paths;
+package org.firstinspires.ftc.teamcode.Autonomous.FarSide_Unused.Paths;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
-
-import org.firstinspires.ftc.teamcode.Autonomous.FarSide.Paths.FarPaths;
 
 public class FarPathsBlue extends FarPaths {
     public static final double maxRotTimeGrab = 0.5;

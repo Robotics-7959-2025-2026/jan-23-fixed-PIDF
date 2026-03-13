@@ -6,6 +6,8 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierPoint;
 import com.pedropathing.geometry.Pose;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -50,9 +52,8 @@ public class PaladinTeleop extends LinearOpMode {
     private static final double BASE_P = 0.4;
     double F = 14.02;
     double P = 0.015;
-    private AprilTagCamera ATC = null;
-    private AprilTagDetection goalTag;
-    private List<AprilTagDetection> tagDetections = new ArrayList<>();
+    private Limelight3A limelight;
+
     private double PIDFCoefficients;
     private Pose oldPose;
     private double oldHeading;
@@ -73,6 +74,17 @@ public class PaladinTeleop extends LinearOpMode {
         Gamepad previousGamepad1 = new Gamepad();
 
         Motors.init(this.hardwareMap);
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+
+        telemetry.setMsTransmissionInterval(11);
+
+        limelight.pipelineSwitch(0);
+
+        /*
+         * Starts polling for data.
+         */
+        limelight.start();
+
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(new Pose());
         follower.startTeleopDrive();
@@ -94,7 +106,6 @@ public class PaladinTeleop extends LinearOpMode {
                 0.0,    // kA (not needed for flywheel)
                 0.065067     // kS
         );
-        ATC = new AprilTagCamera(hardwareMap, telemetry);
 
         waitForStart();
         while (opModeIsActive()) {
@@ -104,68 +115,96 @@ public class PaladinTeleop extends LinearOpMode {
             previousGamepad1.copy(currentGamepad1);
             currentGamepad1.copy(gamepad1);
             batteryVoltage = battery.getVoltage();
+            LLResult result = limelight.getLatestResult();
+
+            double distance = 0.0;
+
+            if (result != null && result.isValid()) {
+
+                double ty = result.getTy();
+
+                double cameraHeight = 0.42;   // meters (measure yours)
+                double targetHeight = 0.7493;   // meters (game dependent)
+                double cameraAngle = Math.toRadians(0); // mounting angle
+
+                distance =
+                        (targetHeight - cameraHeight) /
+                                Math.tan(cameraAngle + Math.toRadians(ty));
+
+                telemetry.addData("Distance (m)", distance);
+
+                telemetry.addData("Distance (m)", distance);
+            }
+            if(result != null){
+                telemetry.addData("tx", result.getTx());
+                telemetry.addData("ty", result.getTy());
+            }
 
             mf = gamepad1.left_stick_y;
             ms = gamepad1.left_stick_x;
             mr = gamepad1.right_stick_x * 0.75;
-//            rfMotor.setPower(mf + ms + mr);
-//            lfMotor.setPower(mf - ms - mr);
-//            rbMotor.setPower(mf - ms + mr);
-//            lbMotor.setPower(mf + ms - mr);
 
-            ATC.update();
-            tagDetections = ATC.getTagDetections();
-            if (!tagDetections.isEmpty()) {
-                goalTag = null;
 
-                // Filter for decent tags
-                for (AprilTagDetection gT : tagDetections) {
-                    if (gT.id == 20 || gT.id == 24) {
-                        goalTag = gT;
-                        break;
-                    }
-                }
 
-                if (goalTag != null) {
-                    telemetry.addData("Distance in cm", "%.2f", goalTag.ftcPose.range);
+
+
+
+//
+//
+//            ATC.update();
+//            tagDetections = ATC.getTagDetections();
+//            if (!tagDetections.isEmpty()) {
+//                goalTag = null;
+//
+//                // Filter for decent tags
+//                for (AprilTagDetection gT : tagDetections) {
+//                    if (gT.id == 20 || gT.id == 24) {
+//                        goalTag = gT;
+//                        break;
+//                    }
+//                }
+//
+//                if (goalTag != null) {
+//                    telemetry.addData("Distance in cm", "%.2f", goalTag.ftcPose.range);
+//                } else {
+//                    telemetry.addData("GoalTag", "==null");
+//                }
+//            }
+
+            if (gamepad1.right_stick_button && result != null && result.isValid()) {
+
+                double tx = result.getTx(); // horizontal error
+
+                double cameraOffset = 0.11; // meters from robot center
+                if (distance > 2.5) {
+                    cameraOffset = 0.17;
                 } else {
-                    telemetry.addData("GoalTag", "==null");
+                    cameraOffset = 0.11;
                 }
-            }
+                double offsetAngle = Math.toDegrees(Math.atan(cameraOffset / distance));
 
-            if (gamepad1.right_stick_button) {
-                if (goalTag != null) {
-                    if (goalTag.ftcPose == null) {
-                        telemetry.addData("GoalTag", "ftcPose==null");
-                    } else {
-                        error = goalX-goalTag.ftcPose.bearing; //angle away from target
+                error = tx + offsetAngle;
 
-                        if (Math.abs(error) >= aimbotAngleTolerance) {
-                            double pTerm = error * aimbotP;
 
-                            curTime = getRuntime();
-                            double dT = curTime-lastTime;
-                            double dTerm = ((error-aimbotPrevErr)/ dT) * aimbotD;
+                double pTerm = error * aimbotP;
 
-                            mr += Range.clip(pTerm + dTerm, -0.5, 0.5);
+                curTime = getRuntime();
+                double dT = curTime - lastTime;
 
-                            //targetVelocity = ((-0.0119164 * goalTag.ftcPose.range)*(-0.0119164 * goalTag.ftcPose.range)) + (8.25141 * (goalTag.ftcPose.range)) + 710.09773;
-                            targetVelocity = (6.7762 * (goalTag.ftcPose.range)) + 751.44476;
-                            curTargetVelocity = targetVelocity;
-                            aimbotPrevErr = error;
-                            lastTime = curTime;
-                        }
-                    }
-                } else {
-                    lastTime = getRuntime();
-                    aimbotPrevErr = 0;
+                double dTerm = 0;
+                if (dT > 0.001) {
+                    dTerm = ((error - aimbotPrevErr) / dT) * aimbotD;
                 }
-            } else {
-                aimbotPrevErr = 0;
-                lastTime = getRuntime();
+
+                mr += Range.clip(pTerm + dTerm, -0.5, 0.5);
+
+                aimbotPrevErr = error;
+                lastTime = curTime;
+                double distanceCM = distance * 100;
+
+                targetVelocity = (232.0116 * distance) + 778.90026;
+                curTargetVelocity = targetVelocity;
             }
-
-
 
             //hold left bumper to spin, then press the right bumper to shoot
             if (gamepad1.left_bumper) {
@@ -226,10 +265,8 @@ public class PaladinTeleop extends LinearOpMode {
             }
 
             if(lockMode){
-                follower.activateAllPIDFs();
                 follower.holdPoint(new BezierPoint(oldPose), follower.getHeading(), true);
             }else{
-                follower.deactivateAllPIDFs();
                 follower.setTeleOpDrive(-mf, -ms, -mr);
             }
 

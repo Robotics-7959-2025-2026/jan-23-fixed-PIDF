@@ -121,7 +121,7 @@ public class OfficialTeleopBlue extends LinearOpMode {
 
                 telemetry.addData("Distance (m)", distance);
             }
-            if(result != null){
+            if (result != null) {
                 telemetry.addData("tx", result.getTx());
                 telemetry.addData("ty", result.getTy());
             }
@@ -129,10 +129,6 @@ public class OfficialTeleopBlue extends LinearOpMode {
             mf = gamepad1.left_stick_y;
             ms = gamepad1.left_stick_x;
             mr = gamepad1.right_stick_x * 0.75;
-
-
-
-
 
 
 //
@@ -194,13 +190,21 @@ public class OfficialTeleopBlue extends LinearOpMode {
             lbMotor.setPower(mf + ms - mr);
 
             //hold left bumper to spin, then press the right bumper to shoot
-            if (gamepad1.left_bumper) {
+            if (gamepad1.left_bumper && gamepad1.left_trigger < 0.2) {
                 correctedPower = desiredPower * (nominalVoltage / Math.max(batteryVoltage, 1.0));
                 correctedPower = Math.max(-1.0, Math.min(correctedPower, 1.0));
                 intakeMotor.setPower(correctedPower);
+                transfer.setPower(-0.3);
+            } else if (gamepad1.left_bumper && gamepad1.left_trigger > 0.2) {
+                correctedPower = desiredPower * (nominalVoltage / Math.max(batteryVoltage, 1.0));
+                correctedPower = Math.max(-1.0, Math.min(correctedPower, 1.0));
+                intakeMotor.setPower(correctedPower);
+                transfer.setPower(1);
             } else {
+                transfer.setPower(0);
                 intakeMotor.setPower(0.0);
             }
+
 
             currentVelocity = shooterMotor3.getVelocity();
             kV = 0.00036;
@@ -224,11 +228,9 @@ public class OfficialTeleopBlue extends LinearOpMode {
                 shooterMotor2.setPower(0.0);
                 shooterMotor3.setPower(0.0);
             }
-            if(gamepad1.left_trigger>0.2){
-                transfer.setPower(0.7);
-            }else{
-                transfer.setPower(0);
-            }
+//            if(gamepad1.left_trigger>0.2){
+//                transfer.setPower(1);
+//            }
 
             if (gamepad1.bWasPressed()) {
 

@@ -197,11 +197,18 @@ public class OfficialTeleopRed extends LinearOpMode {
             lbMotor.setPower(mf + ms - mr);
 
             //hold left bumper to spin, then press the right bumper to shoot
-            if (gamepad1.left_bumper) {
+            if (gamepad1.left_bumper && gamepad1.left_trigger < 0.2) {
                 correctedPower = desiredPower * (nominalVoltage / Math.max(batteryVoltage, 1.0));
                 correctedPower = Math.max(-1.0, Math.min(correctedPower, 1.0));
                 intakeMotor.setPower(correctedPower);
+                transfer.setPower(-0.3);
+            } else if (gamepad1.left_bumper && gamepad1.left_trigger > 0.2) {
+                correctedPower = desiredPower * (nominalVoltage / Math.max(batteryVoltage, 1.0));
+                correctedPower = Math.max(-1.0, Math.min(correctedPower, 1.0));
+                intakeMotor.setPower(correctedPower);
+                transfer.setPower(1);
             } else {
+                transfer.setPower(0);
                 intakeMotor.setPower(0.0);
             }
 
@@ -227,10 +234,10 @@ public class OfficialTeleopRed extends LinearOpMode {
                 shooterMotor2.setPower(0.0);
                 shooterMotor3.setPower(0.0);
             }
-            if(gamepad1.left_trigger>0.2){
-                transfer.setPower(0.7);
-            }else{
-                transfer.setPower(0);
+//            if(gamepad1.left_trigger>0.2){
+//                transfer.setPower(0.7);
+//            }else{
+//                transfer.setPower(0);
             }
 
             if (gamepad1.bWasPressed()) {
